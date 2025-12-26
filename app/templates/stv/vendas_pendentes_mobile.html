@@ -1,0 +1,64 @@
+{% extends "base_mobile.html" %}
+
+{% block title %}Vendas Pendentes{% endblock %}
+
+{% block content %}
+
+<h5 class="text-center fw-bold mb-3">Vendas Pendentes</h5>
+<!-- Voltar -->
+  <a href="{{ url_for('routes.home') }}"
+     class="btn btn-outline-info w-100 mt-3">
+    ← Voltar
+  </a>
+<hr>
+<!-- BUSCA -->
+<input type="text"
+       id="busca"
+       class="form-control mb-3"
+       placeholder="Buscar por cliente, serviço, data...">
+
+{% if vendas_pendentes %}
+<div class="d-flex flex-column gap-3" id="listaVendas">
+
+  {% for venda in vendas_pendentes %}
+  <div class="card p-3 venda-item">
+
+    <div class="fw-bold venda-texto">
+      {{ venda.cliente.nome }}
+    </div>
+
+    <div class="text-info small fw-semibold venda-texto">
+      {{ venda.servico.nome }}
+    </div>
+
+    <div class="text-muted small venda-texto">
+      {{ venda.data_venda.strftime('%d/%m/%Y %H:%M') if venda.data_venda }}
+    </div>
+
+    <a href="{{ url_for('routes.stv_finalizar_venda', venda_id=venda.id) }}"
+       class="btn btn-success w-100 fw-bold mt-2">
+      Finalizar Venda
+    </a>
+
+  </div>
+  {% endfor %}
+
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+  Nenhuma venda pendente no momento.
+</div>
+{% endif %}
+
+<!-- BUSCA JS -->
+<script>
+document.getElementById("busca").addEventListener("input", function () {
+  const termo = this.value.toLowerCase();
+  document.querySelectorAll(".venda-item").forEach(card => {
+    const texto = card.innerText.toLowerCase();
+    card.style.display = texto.includes(termo) ? "block" : "none";
+  });
+});
+</script>
+
+{% endblock %}

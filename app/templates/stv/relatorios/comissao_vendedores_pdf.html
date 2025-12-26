@@ -1,0 +1,42 @@
+{% extends "base_relatorio_pdf.html" %}
+
+{% block content %}
+
+<h2>Relatório de Comissão por Vendedor</h2>
+
+<p style="text-align:center;margin-bottom:10px;">
+  Período:
+  <strong>{{ data_ini|br_data }}</strong>
+  até
+  <strong>{{ data_fim|br_data }}</strong>
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Vendedor</th>
+      <th>Comissão (R$)</th>
+      <th>Observação</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in dados %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ d.vendedor }}</td>
+      <td>{{ (d.total_comissao|br_moeda or 0) }}</td>
+      <td>{{ d.observacao }}</td>
+    </tr>
+    
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <th colspan="2">TOTAL GERAL</th>
+      <th>{{ (total_geral|br_moeda) }}</th>
+    </tr>
+  </tfoot>
+</table>
+
+{% endblock %}

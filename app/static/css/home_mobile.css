@@ -1,0 +1,60 @@
+/* 🔹 Estilo geral */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+/* 🔹 Cabeçalho grande */
+.app-header {
+    background-color: #004766;
+    color: white;
+    text-align: center;
+    padding: 30px 0;
+    font-size: 26px;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 🔹 Botões principais */
+.home-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    /* AQUI aumentei a sombra para dar mais "botão 3D" */
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2), -4px -4px 8px rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease-in-out;
+}
+
+.home-button:hover {
+    background: #e9ecef;
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.25), -4px -4px 8px rgba(255, 255, 255, 0.7);
+    opacity: 0.95;
+}
+
+.home-button:active {
+    transform: scale(0.98);
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2), -3px -3px 6px rgba(255, 255, 255, 0.7);
+}
+
+
+/* 🔹 Botão de Logout */
+.logout {
+    background: #dc3545;
+    color: white;
+}
+
+.logout:hover {
+    background: #c82333;
+}
+
+

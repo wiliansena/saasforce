@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Gerenciar Usuários</h2>
+
+    <a href="{{ url_for('routes.novo_usuario') }}" class="btn btn-success mb-3">
+        <i class="fas fa-plus"></i> Adicionar
+    </a>
+
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th class="text-center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.id }}</td>
+                <td>{{ usuario.nome }}</td>
+                <td class="text-center">
+                    <a href="{{ url_for('routes.gerenciar_permissoes', id=usuario.id) }}"
+                        class="btn btn-primary btn-sm">
+                        <i class="fas fa-user-shield"></i> Permissões
+                    </a>
+                    <a href="{{ url_for('routes.alterar_senha_usuario', id=usuario.id) }}" class="btn btn-warning btn-sm">
+                        <i class="fas fa-key"></i> Alterar Senha
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('routes.home') }}" class="btn btn-secondary">Voltar</a>
+</div>
+{% endblock %}

@@ -1,0 +1,174 @@
+from flask import render_template, redirect, url_for, flash
+from flask_login import login_required
+from datetime import date
+
+from app.master import bp
+from app.utils_master import requer_master
+from app.master.forms import NovaEmpresaForm
+from app import db
+from app.models import Empresa, Usuario, LicencaSistema
+
+
+@bp.route("/empresas")
+@login_required
+@requer_master
+def listar_empresas():
+
+    empresas = Empresa.query.order_by(Empresa.nome).all()
+
+    for e in empresas:
+        e.licenca = LicencaSistema.query.filter_by(
+            empresa_id=e.id
+        ).first()
+
+    return render_template(
+        "master/empresas_listar.html",
+        empresas=empresas
+    )
+
+
+
+
+@bp.route("/empresas/nova", methods=["GET", "POST"])
+@login_required
+@requer_master
+def nova_empresa():
+
+    form = NovaEmpresaForm()
+
+    if form.validate_on_submit():
+
+        # 🔒 evita duplicidade
+        existe = Empresa.query.filter_by(nome=form.nome.data).first()
+        if existe:
+            flash("Já existe uma empresa com esse nome.", "danger")
+            return render_template("master/empresa_nova.html", form=form)
+
+        try:
+            # =====================================================
+            # 1️⃣ EMPRESA
+            # =====================================================
+            empresa = Empresa(
+                nome=form.nome.data,
+                ativa=True
+            )
+            db.session.add(empresa)
+            db.session.flush()  # garante empresa.id
+
+            # =====================================================
+            # 2️⃣ ADMIN DA EMPRESA
+            # =====================================================
+            admin = Usuario(
+                nome=form.admin_nome.data,
+                empresa_id=empresa.id,
+                is_master=False,
+                is_admin_empresa=True
+            )
+            admin.set_password(form.admin_senha.data)
+            db.session.add(admin)
+            db.session.flush()
+
+            # =====================================================
+            # 3️⃣ LICENÇA
+            # =====================================================
+            licenca = LicencaSistema(
+                empresa_id=empresa.id,
+                data_inicio=date.today(),
+                dias_acesso=form.dias_licenca.data or 30
+            )
+            db.session.add(licenca)
+
+            db.session.commit()
+
+            flash("Empresa criada com sucesso!", "success")
+            return redirect(url_for("master.listar_empresas"))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Erro ao criar empresa: {str(e)}", "danger")
+
+    return render_template("master/empresa_nova.html", form=form)
+
+@bp.route("/empresas/<int:empresa_id>")
+@login_required
+@requer_master
+def detalhe_empresa(empresa_id):
+
+    empresa = Empresa.query.get_or_404(empresa_id)
+
+    usuarios = Usuario.query.filter_by(
+        empresa_id=empresa.id
+    ).order_by(Usuario.nome).all()
+
+    licenca = LicencaSistema.query.filter_by(
+        empresa_id=empresa.id
+    ).first()
+
+    return render_template(
+        "master/empresa_detalhe.html",
+        empresa=empresa,
+        usuarios=usuarios,
+        licenca=licenca
+    )
+
+@bp.route("/empresas/<int:empresa_id>/desativar", methods=["POST"])
+@login_required
+@requer_master
+def desativar_empresa(empresa_id):
+
+    empresa = Empresa.query.get_or_404(empresa_id)
+
+    if not empresa.ativa:
+        flash("Empresa já está desativada.", "info")
+        return redirect(url_for("master.listar_empresas"))
+
+    empresa.ativa = False
+    db.session.commit()
+
+    flash("Empresa desativada com sucesso.", "warning")
+    return redirect(url_for("master.listar_empresas"))
+
+@bp.route("/empresas/<int:empresa_id>/ativar", methods=["POST"])
+@login_required
+@requer_master
+def ativar_empresa(empresa_id):
+
+    empresa = Empresa.query.get_or_404(empresa_id)
+
+    if empresa.ativa:
+        flash("Empresa já está ativa.", "info")
+        return redirect(url_for("master.listar_empresas"))
+
+    empresa.ativa = True
+    db.session.commit()
+
+    flash("Empresa ativada com sucesso.", "success")
+    return redirect(url_for("master.listar_empresas"))
+
+
+@bp.route("/empresas/<int:empresa_id>/renovar_licenca", methods=["POST"])
+@login_required
+@requer_master
+def renovar_licenca(empresa_id):
+
+    empresa = Empresa.query.get_or_404(empresa_id)
+
+    licenca = LicencaSistema.query.filter_by(
+        empresa_id=empresa.id
+    ).first()
+
+    if not licenca:
+        licenca = LicencaSistema(
+            empresa_id=empresa.id,
+            data_inicio=date.today(),
+            dias_acesso=30
+        )
+        db.session.add(licenca)
+    else:
+        # soma mais 30 dias
+        licenca.dias_acesso += 30
+
+    db.session.commit()
+
+    flash("Licença renovada por mais 30 dias.", "success")
+    return redirect(url_for("master.listar_empresas"))

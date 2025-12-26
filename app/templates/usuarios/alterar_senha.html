@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h3>Alterar Senha - {{ usuario.nome }}</h3>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+            <label>Nova Senha</label>
+            {{ form.nova_senha(class="form-control") }}
+        </div>
+
+        <div class="mb-3">
+            <label>Confirmar Senha</label>
+            {{ form.confirmar_senha(class="form-control") }}
+        </div>
+
+        <button type="submit" class="btn btn-success">Salvar</button>
+        <a href="{{ url_for('routes.listar_usuarios') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

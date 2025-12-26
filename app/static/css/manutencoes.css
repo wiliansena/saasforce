@@ -1,0 +1,70 @@
+/* --- Kanban de Manutenções --- */
+
+/* Card */
+.card-status {
+    border: 2px solid;
+    border-radius: 0.75rem;
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+
+/* Hover com elevação */
+.card-status:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+}
+
+/* Título */
+.card-status h5 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+/* Ícone */
+.card-status i {
+    font-size: 1.2rem;
+}
+
+/* Badge */
+.badge {
+    font-size: 0.7rem;
+    border-radius: 0.5rem;
+    padding: 0.25em 0.5em;
+}
+
+/* Card item */
+.card-status .list-group-item {
+    border-radius: 0.5rem;
+    margin-bottom: 6px;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Hover no item */
+.card-status .list-group-item:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+    transform: scale(1.015);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Botões */
+.card-status .btn-outline-primary {
+    width: 100%;
+}
+
+/* Padding do corpo */
+.card-status .card-body {
+    padding: 0.8rem;
+}
+
+/* Cores suaves internas */
+.bg-primary.bg-opacity-10 {
+    background-color: rgba(13, 110, 253, 0.08) !important;
+}
+.bg-warning.bg-opacity-25 {
+    background-color: rgba(255, 193, 7, 0.18) !important;
+}
+.bg-success.bg-opacity-10 {
+    background-color: rgba(25, 135, 84, 0.1) !important;
+}
+

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Painel Master — Empresas</h3>
+
+        <a href="{{ url_for('master.nova_empresa') }}" class="btn btn-primary">
+            Nova Empresa
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover bg-white">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Status</th>
+                <th>Licença</th>
+                <th style="width: 200px;">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in empresas %}
+            <tr>
+                <td>{{ e.id }}</td>
+                <td>{{ e.nome }}</td>
+                <td>
+                    {% if e.ativa %}
+                    <span class="badge bg-success">Ativa</span>
+                    {% else %}
+                    <span class="badge bg-danger">Inativa</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if e.licenca and not e.licenca.expirado %}
+                    {{ e.licenca.dias_restantes }} dias
+                    {% else %}
+                    <span class="text-danger">Expirada</span>
+                    {% endif %}
+                </td>
+<td>
+    <a href="{{ url_for('master.detalhe_empresa', empresa_id=e.id) }}"
+       class="btn btn-sm btn-secondary">
+        Detalhes
+    </a>
+
+    <form method="POST"
+          action="{{ url_for('master.renovar_licenca', empresa_id=e.id) }}"
+          style="display:inline;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-sm btn-info">
+            +30 dias
+        </button>
+    </form>
+
+    {% if e.ativa %}
+        <form method="POST"
+              action="{{ url_for('master.desativar_empresa', empresa_id=e.id) }}"
+              style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-sm btn-danger"
+                    onclick="return confirm('Desativar esta empresa?');">
+                Desativar
+            </button>
+        </form>
+    {% else %}
+        <form method="POST"
+              action="{{ url_for('master.ativar_empresa', empresa_id=e.id) }}"
+              style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-sm btn-success">
+                Ativar
+            </button>
+        </form>
+    {% endif %}
+</td>
+
+
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center text-muted">
+                    Nenhuma empresa cadastrada
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

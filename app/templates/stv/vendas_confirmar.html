@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Confirmar Venda</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: #ffffff;
+      font-family: Inter, system-ui, Arial;
+    }
+
+    .card {
+      background: linear-gradient(180deg, #0f172a, #020617);
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, .45);
+    }
+
+    .info-label {
+      font-weight: 700;
+      color: #60a5fa;
+    }
+
+    .info-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .form-control {
+      background: #020617;
+      color: #fff;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+    }
+
+    .form-control::placeholder {
+      color: #94a3b8;
+    }
+
+    /* ================= MODAL CONTAS PREMIUM ================= */
+
+    .modal-content {
+      background: linear-gradient(180deg, #0f172a, #020617);
+      border: 1px solid #1e293b;
+      border-radius: 22px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .8);
+    }
+
+    .modal-header {
+      border: 0;
+      padding-bottom: 0;
+    }
+
+    .modal-title {
+      font-weight: 800;
+      letter-spacing: .4px;
+    }
+
+    .conta-card {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 16px;
+      background: #020617;
+      border: 1px solid #1e293b;
+      cursor: pointer;
+      transition: all .25s ease;
+    }
+
+    .conta-card:hover {
+      transform: translateY(-3px);
+      border-color: #38bdf8;
+      box-shadow: 0 14px 30px rgba(56, 189, 248, .25);
+    }
+
+    .conta-card.selecionada {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, .4);
+    }
+
+    .conta-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #38bdf8, #6366f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+      color: #020617;
+    }
+
+    .conta-email {
+      font-weight: 700;
+      font-size: 14px;
+      word-break: break-all;
+      color: #ffffff;
+    }
+
+    .conta-info {
+      font-size: 12px;
+      color: #cbd5f5;
+    }
+
+    .badge-livre {
+      background: rgba(34, 197, 94, .15);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, .35);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    /* ================= CONTA SELECIONADA (DESTAQUE) ================= */
+
+    .card-conta-selecionada {
+      border: 2px solid #22c55e !important;
+      background: linear-gradient(180deg, #052e1a, #020617);
+      box-shadow:
+        0 0 0 2px rgba(34, 197, 94, .25),
+        0 25px 50px rgba(34, 197, 94, .25);
+      position: relative;
+      animation: aparecerConta .35s ease-out;
+    }
+
+    .card-conta-selecionada::before {
+      content: "✔ CONTA SELECIONADA";
+      position: absolute;
+      top: -12px;
+      left: 16px;
+      background: #22c55e;
+      color: #022c22;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 4px 10px;
+      border-radius: 999px;
+      letter-spacing: .3px;
+    }
+
+    @keyframes aparecerConta {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  {% include "_flash_messages.html" %}
+
+  <div class="container mt-4" style="max-width:520px">
+
+    <h3 class="text-center mb-3 fw-bold">Confirmar Venda</h3>
+
+    <!-- SERVIÇO -->
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="info-value">
+          <span class="info-label">Serviço:</span> {{ servico.nome }}
+          <br>
+          {% if servico.imagem %}
+          <img src="{{ url_for('static', filename=servico.imagem) }}" alt="{{ servico.nome }}"
+            style="max-height:70px; object-fit:contain;">
+          {% else %}
+          <i class="fas fa-tv"></i>
+          {% endif %}
+        </div>
+
+        {% if venda_confirmada %}
+        <div class="mt-2">
+          <span class="info-label">Status:</span>
+          {% if venda.status == "ATIVA" %}
+          <span class="badge bg-success">ATIVA</span>
+          {% else %}
+          <span class="badge bg-warning text-dark">PENDENTE</span>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- CONTA SELECIONADA -->
+    <div id="boxContaSelecionada" class="card card-conta-selecionada mb-3 d-none">
+      <div class="card-body">
+        <div class="info-value">
+          <span class="info-label">Conta:</span>
+          <span id="contaEmail"></span>
+        </div>
+        <div class="info-value">
+          <span class="info-label">Senha:</span>
+          <span id="contaSenha"></span>
+        </div>
+      </div>
+    </div>
+
+    {% if not venda_confirmada %}
+    <form method="POST">
+      {{ form.hidden_tag() }}
+
+      <label class="fw-bold mb-1">Telefone do cliente</label>
+      {{ form.telefone(class="form-control mb-3", placeholder="DDD + Número", id="telefone") }}
+
+      {% if contas_com_telas %}
+      <button type="button" class="btn btn-info w-100 mb-3" data-bs-toggle="modal" data-bs-target="#modalContas">
+        Escolher conta (opcional)
+      </button>
+      {% else %}
+      <div class="alert alert-warning text-center">
+        Nenhuma conta disponível no momento.
+        A venda será registrada como <strong>PENDENTE</strong>.
+      </div>
+      {% endif %}
+
+
+      <input type="hidden" name="conta_id" id="conta_id_hidden">
+      <hr>
+      <button class="btn btn-success w-100 fw-bold">
+        CONFIRMAR VENDA
+      </button>
+    </form>
+    {% endif %}
+
+    {% if venda_confirmada %}
+    <div class="alert alert-success text-center mt-3">
+      Venda registrada com sucesso!
+    </div>
+
+    {% if venda.status == "ATIVA" and venda.tela %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="info-value">
+          <span class="info-label">Email:</span> {{ venda.tela.conta.email }}
+        </div>
+        <div class="info-value">
+          <span class="info-label">Senha:</span> {{ venda.tela.conta.senha }}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <button class="btn btn-success w-100 mb-2" data-bs-toggle="modal" data-bs-target="#modalWhatsapp">
+      📲 Enviar dados no WhatsApp
+    </button>
+
+    <a href="{{ url_for('routes.home') }}" class="btn btn-secondary w-100">
+      Finalizar
+    </a>
+    {% endif %}
+
+    <a href="{{ url_for('routes.home') }}" class="btn btn-outline-info w-100 mt-3">
+      ← Voltar
+    </a>
+  </div>
+
+  <!-- MODAL CONTAS -->
+  {% if contas_com_telas %}
+  <div class="modal fade" id="modalContas" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-white">
+
+        <div class="modal-header">
+          <h5 class="modal-title">📧 Escolher Conta</h5>
+          <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body d-flex flex-column gap-3">
+          {% for c, livres in contas_com_telas %}
+          <div class="conta-card" onclick="selecionarConta(this,'{{ c.id }}','{{ c.email }}','{{ c.senha }}')">
+
+            <div class="conta-icon">@</div>
+
+            <div>
+              <div class="conta-email">{{ c.email }}</div>
+              <div class="conta-info">Conta disponível</div>
+            </div>
+
+            <span class="badge-livre">{{ livres }} livres</span>
+          </div>
+          {% endfor %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- MODAL WHATSAPP -->
+  {% if venda_confirmada %}
+  <div class="modal fade" id="modalWhatsapp">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-white">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Mensagem para o Cliente</h5>
+          <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <textarea id="msgWhatsapp" class="form-control mb-3" rows="6" readonly>
+*{{ servico.nome | upper }}*
+
+{% if venda.status == "ATIVA" and venda.tela %}
+👤 *Email:* {{ venda.tela.conta.email }}
+🔑 *Senha:* {{ venda.tela.conta.senha }}
+➡️ *Tela:* {{venda.tela.numero}}
+
+Agradecemos a preferência! ✅🍿
+{% else %}
+Seu acesso será enviado em breve 😊
+{% endif %}
+</textarea>
+
+          <button class="btn btn-success w-100 mb-2" onclick="copiarMensagem()">
+            📋 Copiar mensagem
+          </button>
+
+          <a id="btnWhatsapp" href="#" target="_blank" class="btn btn-primary w-100" data-servico="{{ servico.nome }}"
+            data-email="{{ venda.tela.conta.email if venda.tela }}"
+            data-senha="{{ venda.tela.conta.senha if venda.tela }}" data-status="{{ venda.status }}">
+            💬 Abrir WhatsApp
+          </a>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    function selecionarConta(el, id, email, senha) {
+      document.querySelectorAll('.conta-card')
+        .forEach(c => c.classList.remove('selecionada'));
+
+      el.classList.add('selecionada');
+
+      document.getElementById("conta_id_hidden").value = id;
+      document.getElementById("contaEmail").innerText = email;
+      document.getElementById("contaSenha").innerText = senha;
+      document.getElementById("boxContaSelecionada").classList.remove("d-none");
+
+      setTimeout(() => {
+        bootstrap.Modal.getInstance(
+          document.getElementById('modalContas')
+        ).hide();
+      }, 300);
+    }
+
+    function copiarMensagem() {
+      const t = document.getElementById("msgWhatsapp");
+      t.select();
+      document.execCommand("copy");
+    };
+  </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const btnWhatsapp = document.getElementById("btnWhatsapp");
+  if (!btnWhatsapp) return;
+
+  // ===============================
+  // 📞 TELEFONE (somente números)
+  // ===============================
+  const telefoneRaw = "{{ venda.cliente.telefone if venda_confirmada else '' }}";
+  const telefone = telefoneRaw.replace(/\D/g, "");
+
+  if (!telefone) return;
+
+  // ===============================
+  // 📦 DADOS VINDOS DO BOTÃO
+  // ===============================
+  const servico = btnWhatsapp.dataset.servico || "";
+  const status  = btnWhatsapp.dataset.status || "";
+  const email   = btnWhatsapp.dataset.email || "";
+  const senha   = btnWhatsapp.dataset.senha || "";
+
+  // ===============================
+  // 😀 EMOJIS (UNICODE SAFE)
+  // ===============================
+  const EMOJI_USER  = "\uD83D\uDC64"; // 👤
+  const EMOJI_KEY   = "\uD83D\uDD11"; // 🔑
+  const EMOJI_OK    = "\u2705";       // ✅
+  const EMOJI_POP   = "\uD83C\uDF7F"; // 🍿
+  const EMOJI_PHONE = "\uD83D\uDCF2"; // 📲
+  const EMOJI_SMILE = "\uD83D\uDE0A"; // 😊
+
+  // ===============================
+  // 📝 MENSAGEM
+  // ===============================
+  let mensagem = `*${servico.toUpperCase()}*\n\n`;
+
+  if (status === "ATIVA" && email && senha) {
+    mensagem += `${EMOJI_USER} Email: ${email}\n`;
+    mensagem += `${EMOJI_KEY} Senha: ${senha}\n\n`;
+    mensagem += `Agradecemos a preferência! ${EMOJI_OK}${EMOJI_POP}`;
+  } else {
+    mensagem += `Seu acesso será enviado em breve ${EMOJI_SMILE}`;
+  }
+
+  // ===============================
+  // 🔐 ENCODE (OBRIGATÓRIO)
+  // ===============================
+  const mensagemEncoded = encodeURIComponent(mensagem);
+
+  // ===============================
+  // 🚀 LINK WHATSAPP
+  // ===============================
+  btnWhatsapp.href = `https://wa.me/55${telefone}?text=${mensagemEncoded}`;
+
+});
+</script>
+
+
+  <script>
+    document.getElementById("boxContaSelecionada")
+      .classList.add("card-conta-selecionada");
+
+  </script>
+</body>
+
+</html>

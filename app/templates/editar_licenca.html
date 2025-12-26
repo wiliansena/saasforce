@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Editar Licença</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+            {{ form.dias_acesso.label(class="form-label") }}
+            {{ form.dias_acesso(class="form-control") }}
+        </div>
+
+        <button type="submit" class="btn btn-success">Salvar</button>
+        <a href="{{ url_for('routes.listar_licencas') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+{% endblock %}

@@ -1,0 +1,196 @@
+/* 🔹 Estilo geral */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* 🔹 Cabeçalho no estilo de aplicativo */
+.app-header {
+    background-color: #004766;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* 🔹 Cartões */
+.card {
+    border-radius: 12px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    background: white;
+    padding: 15px;
+}
+
+/* 🔹 Lista de itens */
+.list-group-item {
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* 🔹 Imagem responsiva */
+.ref-img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+/* 🔹 Ajuste nos botões */
+.btn {
+    font-size: 18px;
+    padding: 12px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+/* 🔹 Campos de entrada com efeito 3D e fundo levemente escuro */
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    background: #f4f4f9; /* Mesma cor usada nos campos das referências */
+    box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.1), inset -2px -2px 5px rgba(255, 255, 255, 0.7);
+    transition: all 0.3s;
+    padding: 10px;
+}
+
+/* 🔹 Efeito ao focar no campo */
+.form-control:focus {
+    background: #eaeaf1; /* Tom um pouco mais escuro ao focar */
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2), inset -1px -1px 3px rgba(255, 255, 255, 0.5);
+    border-color: #007bff;
+}
+
+/* 🔹 Define um tamanho fixo e uniforme para os campos */
+.table .form-control {
+    width: 90px !important;  /* 🔥 Ajuste aqui se precisar maior/menor */
+    min-width: 90px !important;
+    max-width: 90px !important;
+    height: 40px !important;  /* 🔥 Garante altura uniforme */
+    text-align: center;
+    padding: 5px;
+}
+
+/* 🔹 Faz com que todas as células da tabela tenham a mesma altura */
+.table td {
+    height: 45px; /* 🔹 Define um tamanho fixo para todas as células */
+    vertical-align: middle; /* 🔹 Centraliza o conteúdo */
+    padding: 5px;
+}
+
+/* 🔹 Garante que os inputs fiquem alinhados horizontalmente */
+.list-group-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* 🔹 Ajuste para telas menores */
+@media (max-width: 768px) {
+    .table .form-control {
+        width: 80px !important;
+        min-width: 80px !important;
+        max-width: 80px !important;
+        height: 35px !important;  /* 🔹 Ajuste para não ficar muito grande */
+    }
+}
+
+.ref-img {
+    max-width: 70px;  /* 🔹 Ajuste o tamanho da imagem */
+    max-height: 70px;
+    border-radius: 8px;
+    margin-left: 10px; /* 🔹 Dá um espaço entre o texto e a imagem */
+}
+
+/* Estilização do modal (imagem grande ao clicar) */
+.modalz {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    text-align: center;
+}
+
+/* Imagem dentro do modal */
+.modal-contentz {
+    max-width: 80%;
+    max-height: 80%;
+    margin-top: 5%;
+}
+
+/* Botão de fechar */
+.closez {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    color: white;
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+
+/* 🔹 Melhora profissional dos botões */
+
+/* Botões mais elegantes, com efeito e transição */
+.btn {
+    font-size: 17px;
+    padding: 14px;
+    width: 100%;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* sombra externa */
+    transition: all 0.3s ease; /* transição suave */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ícone com espaçamento */
+.btn i {
+    margin-right: 8px;
+    font-size: 1.2rem;
+}
+
+/* Efeito de hover */
+.btn:hover {
+    opacity: 0.9;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Efeito ao pressionar */
+.btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Cores personalizadas suaves para os botões de ação */
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}

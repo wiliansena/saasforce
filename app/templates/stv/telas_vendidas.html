@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid mt-3">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Telas Vendidas</h4>
+    </div>
+
+    <!-- 🔎 Filtros -->
+    <form method="GET" class="card mb-3">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label>De</label>
+                    <input type="date" name="data_ini" class="form-control"
+                           value="{{ data_ini }}">
+                </div>
+                <div class="col-md-3">
+                    <label>Até</label>
+                    <input type="date" name="data_fim" class="form-control"
+                           value="{{ data_fim }}">
+                </div>
+                <div class="col-md-4">
+                    <label>Vendedor</label>
+                    <select name="vendedor_id" class="form-select">
+                        <option value="">Todos</option>
+                        {% for v in vendedores %}
+                        <option value="{{ v.id }}"
+                          {% if vendedor_id and vendedor_id|int == v.id %}selected{% endif %}>
+                            {{ v.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100">
+                        Aplicar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- 🔍 Pesquisa JS -->
+    <div class="mb-3">
+        <input type="text"
+               id="searchInput"
+               class="form-control"
+               placeholder="Pesquisar por cliente, telefone, serviço, conta, vendedor...">
+    </div>
+
+    <!-- 📋 Tabela -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover" id="tabelaVendas">
+            <thead class="table-dark">
+                <tr>
+                    <th>Data</th>
+                    <th>Vendedor</th>
+                    <th>Cliente</th>
+                    <th>Serviço</th>
+                    <th>Conta</th>
+                    <th>Tela</th>
+                    <th>Venda</th>
+                    <th>Comissão</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in vendas %}
+                <tr>
+                    <td>{{ v.data_venda|br_data }}</td>
+                    <td>{{ v.vendedor.nome }}</td>
+                    <td>{{v.cliente.nome}}</td>
+                    <td>{{ v.tela.conta.servico.nome }}</td>
+                    <td>{{ v.tela.conta.email }}</td>
+                    <td>{{ v.tela.numero }}</td>
+                    <td>{{ v.valor_venda|br_moeda }}</td>
+                    <td>{{ v.valor_comissao|br_moeda }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="text-center text-muted">
+                        Nenhuma venda encontrada.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- 🔍 Busca JS -->
+<script>
+    document.getElementById("searchInput").addEventListener("keyup", function () {
+        const value = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#tabelaVendas tbody tr");
+
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(value)
+                ? ""
+                : "none";
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Funcionários</h2>
+    <a href="{{ url_for('routes.novo_funcionario') }}" class="btn btn-success mb-3">Adicionar</a>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Função</th>
+                <th>Setor</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for funcionario in funcionarios %}
+            <tr>
+                <td>{{ funcionario.id }}</td>
+                <td>{{ funcionario.nome }}</td>
+                <td>{{ funcionario.funcao }}</td>
+                <td>{{funcionario.setor.nome}}</td>
+                <td>
+                    <a href="{{ url_for('routes.editar_funcionario', id=funcionario.id) }}"
+                        class="btn btn-warning btn-sm me-2">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <form method="POST" action="{{ url_for('routes.excluir_funcionario', id=funcionario.id) }}"
+                        style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('Tem certeza que deseja excluir este funcionário?');">
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </button>
+                    </form>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

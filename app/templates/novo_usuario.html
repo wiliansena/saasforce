@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Criar Novo Usuário</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+            {{ form.nome.label(class="form-label") }}
+            {{ form.nome(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-control") }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.senha.label(class="form-label") }}
+            {{ form.senha(class="form-control") }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.confirmar_senha.label(class="form-label") }}
+            {{ form.confirmar_senha(class="form-control") }}
+        </div>
+
+
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> {{ form.submit.label.text }}</button>
+        <a href="{{ url_for('routes.listar_usuarios') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

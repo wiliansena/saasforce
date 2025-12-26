@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid mt-3">
+    <h4>{{ 'Editar Serviço' if servico else 'Novo Serviço' }}</h4>
+
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                {{ form.nome.label }}
+                {{ form.nome(class="form-control") }}
+            </div>
+
+            <div class="col-md-4 mb-3">
+                {{ form.tipo.label }}
+                {{ form.tipo(class="form-select") }}
+            </div>
+
+            <div class="col-md-4 mb-3">
+                {{ form.telas_total.label }}
+                {{ form.telas_total(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                {{ form.valor_investido.label }}
+                {{ form.valor_investido(class="form-control") }}
+            </div>
+            <div class="col-md-3 mb-3">
+                {{ form.valor_venda_padrao.label }}
+                {{ form.valor_venda_padrao(class="form-control") }}
+            </div>
+
+            <div class="col-md-3 mb-3">
+                {{ form.comissao_padrao.label }}
+                {{ form.comissao_padrao(class="form-control") }}
+            </div>
+
+            <div class="col-md-3 mb-3 d-flex align-items-center">
+                <div class="form-check mt-4">
+                    {{ form.ativo(class="form-check-input") }}
+                    {{ form.ativo.label(class="form-check-label") }}
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.imagem.label }}
+                {{ form.imagem(class="form-control-file") }}
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <button class="btn btn-success">Salvar</button>
+            <a href="{{ url_for('routes.stv_listar_servicos') }}" class="btn btn-secondary">
+                Voltar
+            </a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Histórico de Ações</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Usuário</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.data_hora.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                <td>{{ log.usuario_nome }}</td>
+                <td>{{ log.acao }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

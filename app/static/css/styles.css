@@ -1,0 +1,33 @@
+
+/* Garantir que o texto dentro do campo fique em negrito */
+.grade-input {
+    font-weight: bold !important;  /* Forçar negrito */
+    text-align: center;  /* Centralizar o texto */
+}
+
+@media print {
+    /* Oculta botões na impressão */
+    .btn {
+        display: none;
+    }
+    /* Ajusta o layout para impressão */
+    body {
+        font-size: 14px;
+        color: #000;
+        background: #fff;
+    }
+}
+
+
+
+/* Define a cor de fundo para o cabeçalho e rodapé */
+.cabecalho, .rodape {
+    background-color: #007bff; /* exemplo: azul */
+    color: #fff;
+    padding: 15px;
+    }
+/* Opcional: centralizar o conteúdo */
+.cabecalho h1, .rodape p {
+    text-align: center;
+    margin: 0;
+    }

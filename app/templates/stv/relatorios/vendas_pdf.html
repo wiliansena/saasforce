@@ -1,0 +1,79 @@
+{% extends "base_relatorio_pdf.html" %}
+
+{% block content %}
+
+<h2>Relatório de Vendas</h2>
+
+<p style="text-align:center;margin-bottom:10px;">
+    Período:
+    <strong>{{ data_ini|br_data }}</strong> até
+    <strong>{{ data_fim|br_data }}</strong>
+</p>
+
+{% if status %}
+<p style="text-align:center;margin-bottom:10px;">
+    Status filtrado: <strong>{{ status }}</strong>
+</p>
+{% endif %}
+
+<table>
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Vendedor</th>
+            <th>Cliente</th>
+            <th>Serviço</th>
+            <th>Tela</th>
+            <th>Valor (R$)</th>
+            <th>Comissão (R$)</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for v in vendas %}
+        <tr>
+            <td>{{ (v.data_venda|br_data) }}</td>
+            <td>{{ v.vendedor }}</td>
+            <td>{{ v.cliente }}</td>
+            <td>{{ v.servico }}</td>
+            <td>{{ v.tela or '-' }}</td>
+            <td>{{ (v.valor_venda|br_moeda) }}</td>
+            <td>{{ (v.valor_comissao|br_moeda) }}</td>
+            <td>{{ v.status }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+    <tfoot>
+        <tr>
+            <th colspan="5">TOTAIS (Ativas, pendentes, canceladas)</th>
+            <th>{{ (total_vendas_geral|br_moeda) }}</th>
+            <th>{{ (total_comissao_geral|br_moeda) }}</th>
+        </tr>
+    </tfoot>
+    <tfoot>
+            <tfoot>
+        <tr>
+            <th colspan="5">TOTAIS (CANCELADAS)</th>
+            <th>{{ (total_vendas_cancelada|br_moeda) }}</th>
+            <th>{{ (total_comissao_cancelada|br_moeda) }}</th>
+        </tr>
+    </tfoot>
+            <tfoot>
+        <tr>
+            <th colspan="5">TOTAIS (PENDENTE)</th>
+            <th>{{ (total_vendas_pendente|br_moeda) }}</th>
+            <th>{{ (total_comissao_pendente|br_moeda) }}</th>
+        </tr>
+    </tfoot>
+        <tr>
+            <th colspan="5">TOTAIS (ATIVAS)</th>
+            <th>{{ (total_vendas|br_moeda) }}</th>
+            <th>{{ (total_comissao|br_moeda) }}</th>
+        </tr>
+    </tfoot>
+
+
+</table>
+
+{% endblock %}

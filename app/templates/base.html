@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <title>SalesForceX</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Ícone da aba -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/paginas3.css') }}">
+
+    <!-- Favicon padrão -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+
+
+    <!-- Ícones para Android e PWA -->
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='images/icon-192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='images/icon-512.png') }}">
+
+    <!-- Ícone para iOS -->
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+
+    <!-- Manifesto opcional (se quiser transformar em app tipo PWA) -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#0d6efd">
+
+    <!-- HEAD: CSS do Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+
+</head>
+<!-- Antes de </body>: JS do Select2 -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+<body>
+
+    <!-- Botão de alternância da sidebar -->
+    <button id="toggleSidebar" class="toggle-sidebar-btn no-print" title="Abrir/Fechar Menu">
+        <i id="toggleIcon" class="fa-solid fa-angles-left"></i>
+    </button>
+
+    <!-- Barra superior -->
+<div class="top-bar">
+    <div class="system-title">PAINEL DE CONTROLE</div>
+
+    <div class="user-info">
+        <div class="empresa-nome">
+            {{ (current_user.empresa.nome if current_user.empresa and current_user.empresa.nome else "MASTER") | upper }}
+        </div>
+        <div class="usuario-nome">
+            Olá, {{ current_user.nome | upper}}
+        </div>
+    </div>
+</div>
+
+
+    <!-- Menu lateral (visível apenas para usuários autenticados) -->
+    {% if current_user.is_authenticated %}
+    <nav class="sidebar">
+        <div class="text-center">
+            <h4> {{ (current_user.empresa.nome if current_user.empresa and current_user.empresa.nome else "MASTER") | upper }}
+</h4>
+        </div>
+
+        <a href="{{ url_for('routes.home') }}"><i class="fas fa-home"></i> Página Inicial</a>
+        <hr>
+
+        <!-- VENDAS -->
+        {% if ('venda', 'ver') in g.permissoes %}
+        <div class="sidebar-category" onclick="toggleMenu('venda')">
+            <i class="fa-solid fa-dollar"></i> Vendas
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="sidebar-submenu" id="venda">
+            <a href="{{ url_for('routes.stv_listar_vendas') }}"><i class="fa-solid fa-cart-shopping"></i>
+                Vendas</a>
+            <a href="{{ url_for('routes.stv_vendas_servicos') }}"><i class="fas fa-plus"></i>
+                Nova venda</a>
+            <a href="{{ url_for('routes.stv_bi_ranking_vendedores') }}"><i class="fa-solid fa-trophy"></i>
+                Ranking vendedores</a>
+
+        </div>
+        {% endif %}
+
+
+
+        <!-- Administrativo  -->
+        {% if ('administrativo', 'ver') in g.permissoes %}
+        <div class="sidebar-category" onclick="toggleMenu('administrativo')">
+            <i class="fa-solid fa-diagram-project"></i> Controle Comercial
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="sidebar-submenu" id="administrativo">
+            <a href="{{ url_for('routes.stv_listar_servicos') }}"><i class="fa-solid fa-tv"></i>
+                Serviços Streaming </a>
+            <a href="{{ url_for('routes.stv_listar_contas') }}"><i class="fa-solid fa-user"></i>
+                Contas</a>
+            <a href="{{ url_for('routes.stv_bi_dashboard') }}"><i class="fa-solid fa-chart-column"></i>
+
+                BI Dashboard</a>
+
+        </div>
+        {% endif %}
+
+        <!-- 🔹 Administração (sempre visível) -->
+        <div class="sidebar-category" onclick="toggleMenu('administracao')">
+            <i class="fas fa-user-cog"></i> Administração
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="sidebar-submenu" id="administracao">
+            {% if ('usuarios', 'ver') in g.permissoes %}
+            <a href="{{ url_for('routes.listar_usuarios') }}"><i class="fas fa-users"></i> Usuários</a>
+            <a href="{{ url_for('routes.listar_logs') }}"><i class="bi bi-clock-history"></i> Logs</a>
+            {% endif %}
+            {% if ('trocar_senha', 'editar') in g.permissoes %}
+            <a href="{{ url_for('auth.trocar_senha') }}"><i class="fas fa-key"></i> Trocar Senha</a>
+            {% endif %}
+            <a href="{{ url_for('routes.listar_licencas') }}"><i class="fa-solid fa-screwdriver-wrench"></i>
+                Suporte</a>
+        </div>
+
+
+
+        <!-- Botão de logout -->
+        <a href="{{ url_for('auth.logout') }}" class="text-danger"><i class="bi bi-box-arrow-right"></i> Sair</a>
+    </nav>
+    {% endif %}
+
+    <!-- Conteúdo principal -->
+    <div class="content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JS Personalizado -->
+    <script src="{{ url_for('static', filename='js/formatacao_numeros.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/zoom.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/marcar_botoes_selecionados.js') }}"></script>
+
+    <!--SCRIPT PARA ALTERAR A DIREÇÃO DO BOTÃO DE ESCONDER E APARECER O MENU LATERAL-->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggleBtn = document.getElementById("toggleSidebar");
+            const toggleIcon = document.getElementById("toggleIcon");
+
+            // 🔹 Recupera estado salvo (true = escondida, false = visível)
+            const sidebarHidden = localStorage.getItem("sidebarHidden") === "true";
+            if (sidebarHidden) {
+                document.body.classList.add("hide-sidebar");
+                toggleIcon.classList.remove("fa-angles-left");
+                toggleIcon.classList.add("fa-angles-right");
+            }
+
+            toggleBtn.addEventListener("click", function () {
+                document.body.classList.toggle("hide-sidebar");
+
+                // Atualiza ícone
+                if (document.body.classList.contains("hide-sidebar")) {
+                    toggleIcon.classList.remove("fa-angles-left");
+                    toggleIcon.classList.add("fa-angles-right");
+                    localStorage.setItem("sidebarHidden", "true"); // salva estado
+                } else {
+                    toggleIcon.classList.remove("fa-angles-right");
+                    toggleIcon.classList.add("fa-angles-left");
+                    localStorage.setItem("sidebarHidden", "false"); // salva estado
+                }
+            });
+        });
+    </script>
+
+    <script>
+        window.addEventListener("resize", function () {
+            document.querySelectorAll(".table-responsive").forEach(function (el) {
+                el.scrollLeft = 0;
+            });
+        });
+
+        /* 🔹 Passar automaticamente para o próximo campo ao digitar */
+        document.addEventListener("DOMContentLoaded", function () {
+            let inputs = document.querySelectorAll("input, select, textarea");
+
+            inputs.forEach((input, index) => {
+                input.addEventListener("keydown", function (event) {
+                    if (event.key === "Enter") {
+                        // Se estiver em um form de busca, deixa enviar normalmente
+                        let form = this.form;
+                        if (form && form.method.toLowerCase() === "get") {
+                            return true; // não bloqueia
+                        }
+
+                        // Caso contrário, pula para o próximo campo
+                        event.preventDefault();
+                        let nextInput = inputs[index + 1];
+                        if (nextInput) {
+                            nextInput.focus();
+                        }
+                    }
+                });
+            });
+        });
+
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Recupera as categorias abertas do localStorage
+            let abertas = JSON.parse(localStorage.getItem("categoriasAbertas")) || [];
+
+            // Reabre as categorias salvas
+            abertas.forEach(id => {
+                const submenu = document.getElementById(id);
+                const category = submenu?.previousElementSibling;
+
+                if (submenu) {
+                    submenu.style.display = "block";
+                    category?.classList.add("active");
+                }
+            });
+
+            // Função para alternar um menu
+            function toggleMenu(id) {
+                const submenu = document.getElementById(id);
+                const category = submenu.previousElementSibling;
+
+                if (submenu.style.display === "block") {
+                    submenu.style.display = "none";
+                    category.classList.remove("active");
+                    abertas = abertas.filter(item => item !== id); // remove da lista
+                } else {
+                    submenu.style.display = "block";
+                    category.classList.add("active");
+                    if (!abertas.includes(id)) abertas.push(id); // adiciona se não existir
+                }
+
+                // Salva no localStorage
+                localStorage.setItem("categoriasAbertas", JSON.stringify(abertas));
+            }
+
+            // Associa o clique aos botões de categoria
+            document.querySelectorAll(".sidebar-category").forEach(category => {
+                category.addEventListener("click", function () {
+                    const id = this.nextElementSibling.id;
+                    toggleMenu(id);
+                });
+            });
+        });
+    </script>
+    <script>
+        // 🔁 Usa pagehide, que funciona mesmo com navegação instantânea
+        window.addEventListener("pagehide", function () {
+            sessionStorage.setItem("scrollY", window.scrollY);
+        });
+
+        // ✅ Restaura o scroll na próxima página
+        document.addEventListener("DOMContentLoaded", function () {
+            const scrollY = sessionStorage.getItem("scrollY");
+            if (scrollY !== null) {
+                window.scrollTo(0, parseInt(scrollY));
+                sessionStorage.removeItem("scrollY");
+            }
+        });
+    </script>
+
+    <!--Bloco de scripts para extender em outras páginas (lucratividade,)-->
+    {% block scripts %}
+    {% endblock %}
+
+    <!--script para formatar numeros BR no java script, no jinja e html está no utils-->
+
+    <script>
+        // Funções globais disponíveis em todas as páginas
+
+        function brMoeda(valor) {
+            return valor.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function brNumero(valor) {
+            return parseInt(valor).toLocaleString('pt-BR');
+        }
+    </script>
+
+
+    <!-- Ativa o select2
+     
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        $('.select2').select2({
+            width: '100%',
+            placeholder: 'Selecione',
+            allowClear: true
+        });
+    });
+</script>
+    -->
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            $('.select2').select2({
+                width: '100%',
+                placeholder: 'Selecione',
+                allowClear: true
+            }).on('select2:open', function () {
+                // Foca automaticamente no campo de busca
+                let busca = document.querySelector('.select2-container--open .select2-search__field');
+                if (busca) {
+                    busca.focus();
+                }
+            });
+
+            // Permitir abrir com Enter também em selects single
+            $(document).on('keydown', '.select2-selection', function (e) {
+                if (e.key === "Enter" || e.keyCode === 13) {
+                    $(this).closest('select').select2('open');
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+
+
+
+</html>

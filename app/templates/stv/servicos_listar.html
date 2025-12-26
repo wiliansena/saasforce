@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Serviços de Streaming</h4>
+        <a href="{{ url_for('routes.stv_novo_servico') }}" class="btn btn-primary">
+            Novo Serviço
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nome</th>
+                    <th>Imagem</th>
+                    <th>Tipo</th>
+                    <th>Telas</th>
+                    <th>Investido</th>
+                    <th>Valor venda</th>
+                    <th>Comissão</th>
+                    <th>Status</th>
+                    <th width="180">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in servicos %}
+                <tr>
+                    <td>{{ s.nome }}</td>
+                    <td>
+                    {% if s.imagem %}
+                    <img
+                        src="{{ url_for('static', filename=s.imagem) }}"
+                        alt="{{ s.nome }}"
+                        style="height:60px; border-radius:8px;"
+                    >
+                    {% else %}
+                    <span class="text-muted">Sem imagem</span>
+                    {% endif %}
+
+                </td>
+                    <td>{{ s.tipo|capitalize }}</td>
+                    <td>{{ s.telas_total }}</td>
+                    <td>R$ {{ "%.2f"|format(s.valor_investido) }}</td>
+                    <td>R$ {{ "%.2f"|format(s.valor_venda_padrao) }}</td>
+                    <td>R$ {{ "%.2f"|format(s.comissao_padrao) }}</td>
+                    <td>
+                        {% if s.ativo %}
+                            <span class="badge bg-success">Ativo</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('routes.stv_editar_servico', id=s.id) }}" class="btn btn-sm btn-warning">
+                            Editar
+                        </a>
+
+                        <form action="{{ url_for('routes.stv_excluir_servico', id=s.id) }}"
+                              method="POST"
+                              class="d-inline"
+                              onsubmit="return confirm('Deseja realmente excluir este serviço?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn btn-sm btn-danger">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,798 @@
+/* 🔹 Estilo geral para a página */
+body {
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    font-family: 'Arial', sans-serif;
+}
+
+/* 🔹 Contêiner principal das páginas */
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.2), -4px -4px 8px rgba(255, 255, 255, 0.6);
+    margin-top: 20px;
+}
+
+/* 🔹 Títulos com efeito 3D */
+h2, h4 {
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    color: #333;
+}
+
+/* 🔹 Tabelas com efeito 3D */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.2), -3px -3px 6px rgba(255, 255, 255, 0.5);
+}
+
+.table thead {
+    background: #007bff;
+    color: white;
+    text-transform: uppercase;
+    border-radius: 10px;
+}
+
+.table tbody tr {
+    transition: 0.3s;
+}
+
+.table tbody tr:hover {
+    background-color: #ececec;
+    box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 🔹 Campos de entrada com efeito 3D */
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    background: #f4f4f9;
+    box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.15), inset -2px -2px 4px rgba(255, 255, 255, 0.7);
+    transition: all 0.3s;
+    padding: 10px;
+}
+
+.form-control:focus {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -1px -1px 2px rgba(255, 255, 255, 0.5);
+    border-color: #007bff;
+}
+
+/* 🔹 Botões 3D */
+
+.btn {
+    border-radius: 8px;
+    font-weight: bold;
+    padding: 10px 14px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2), -2px -2px 4px rgba(255, 255, 255, 0.6);
+}
+
+
+
+/* 🔹 Ajuste de espaçamento entre botões dentro do <td> */
+td .btn {
+    margin-right: 5px;
+    margin-bottom: 5px; /* resolve o espaço vertical sem precisar de wrap */
+}
+
+td .btn:last-child {
+    margin-right: 0;
+}
+
+
+
+
+
+
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.3), -3px -3px 6px rgba(255, 255, 255, 0.5);
+}
+
+/* 🔹 Botões coloridos específicos */
+.btn-ver {
+    background-color: #17a2b8;
+    border: none;
+    color: white;
+}
+
+.btn-editar {
+    background-color: #ffc107;
+    border: none;
+    color: black;
+}
+
+.btn-excluir {
+    background-color: #dc3545;
+    border: none;
+    color: white;
+}
+
+.btn-imprimir {
+    background-color: #28a745;
+    border: none;
+    color: white;
+}
+
+/* 🔹 Ajustando o botão ao clicar */
+.btn:active {
+    transform: translateY(2px);
+    box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* 🔹 Modais com efeito 3D */
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.3), -4px -4px 8px rgba(255, 255, 255, 0.6);
+}
+
+/* 🔹 Modal com largura padrão e centralizado */
+.modal-dialog {
+    max-width: 700px;        /* largura padrão controlada */
+    width: 100%;             /* adapta em telas pequenas */
+    margin: 1.75rem auto;    /* centraliza horizontalmente */
+}
+
+/* 🔹 Modal body com rolagem se necessário */
+.modal-body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 70vh;
+}
+
+/* 🔹 Tabela dentro do modal se adapta */
+.modal-body table {
+    table-layout: fixed;     /* força adaptação de colunas */
+    width: 100%;
+    word-wrap: break-word;
+}
+
+/* 🔹 Quebra de linha nas células da tabela */
+.modal-body td, .modal-body th {
+    white-space: normal;     /* permite quebra de linha */
+    word-break: break-word;  /* força quebra de palavras longas */
+    padding: 8px 12px;
+    vertical-align: middle;
+}
+
+/* 🔹 Botões de seleção dentro de modais (tamanho mínimo + sem quebra) */
+.modal-body .btn-selecionar,
+.modal-body .btn {
+    min-width: 80px;
+    white-space: nowrap;        /* impede quebrar em várias linhas */
+    text-align: center;
+}
+
+
+
+/* 🔹 Barra superior fixa */
+.top-bar {
+    background-color: #004766; /* Cor azul escuro */
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    position: fixed; /* 🔥 Mantém a barra fixa */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1050; /* 🔥 Mantém acima de todos os elementos */
+    height: 50px;
+    display: flex;
+    justify-content: center; /* Mantém o título centralizado */
+    align-items: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* 🔥 Adiciona um leve efeito de sombra */
+}
+
+
+
+.user-info {
+    text-align: right;
+    line-height: 1.2;
+}
+
+.empresa-nome {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e5e7eb;
+}
+
+.usuario-nome {
+    font-size: 12px;
+    font-weight: 500;
+    color: #94a3b8;
+}
+
+/* 🔹 Ajusta o conteúdo para não ficar escondido sob a barra */
+.content {
+    margin-top: 60px !important; /* 🔥 Garante que o conteúdo não fique escondido */
+}
+
+
+/* 🔹 Estilo do título do sistema */
+.system-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%); /* Centraliza corretamente o texto */
+}
+
+/* 🔹 Estilo do nome do usuário */
+.user-info {
+    position: absolute;
+    right: 20px; /* Mantém no lado direito */
+    font-weight: bold;
+    font-size: 15px;
+    color: #0fd4ee; /* Cor amarela para destaque */
+}
+
+
+
+/* 🔹 Estilização do Menu Lateral com Categorias */
+.sidebar-category {
+    background: #495057;  /* Fundo escuro */
+    color: white;  /* Texto branco */
+    padding: 12px 15px;  /* Ajuste no espaçamento */
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.sidebar-category i {
+    font-size: 18px;
+    min-width: 25px; /* 🔹 Mantém alinhamento fixo dos ícones */
+    text-align: center;
+    margin-right: 10px;
+}
+
+.sidebar-category:hover {
+    background: #2382ca;
+}
+
+/* 🔹 Quando o mouse passar sobre os links internos */
+.sidebar-submenu a:hover {
+    background: #2382ca !important; /* 🔹 Mesma cor usada na categoria */
+    color: white !important; /* 🔹 Mantém o texto branco para contraste */
+    border-radius: 5px; /* 🔹 Suaviza os cantos dos links internos */
+    transition: all 0.3s ease-in-out; /* 🔹 Efeito suave */
+}
+
+/* 🔹 Ícones de seta para indicar expansão */
+.sidebar-category .toggle-icon {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* 🔹 Gira a seta ao expandir */
+.sidebar-category.open .toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* 🔹 Submenus */
+.sidebar-submenu {
+    display: none;
+    padding-left: 15px;
+}
+
+.sidebar-submenu a {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    color: white;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.sidebar-submenu a i {
+    margin-right: 8px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.sidebar-submenu a:hover {
+    background-color: #007bff;
+    border-radius: 5px;
+}
+
+
+
+.sidebar {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    height: calc(100vh - 50px);
+    width: 250px;
+    background-color: #343a40;
+    padding-top: 20px;
+    color: white;
+    overflow-y: auto;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center; /* Alinha verticalmente o texto com o ícone */
+    text-decoration: none;
+    font-size: 16px;
+    padding: 10px 20px; /* Espaçamento uniforme */
+}
+
+.sidebar a i {
+    width: 20px; /* Mantém um tamanho fixo para os ícones */
+    text-align: center;
+    margin-right: 10px;
+}
+
+.sidebar h4 {
+    color: white !important;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+
+.sidebar a {
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.sidebar a i {
+    margin-right: 10px;
+}
+
+.sidebar a:hover {
+    background-color: #495057;
+}
+
+/* 🔹 Estiliza o overlay de zoom */
+#zoomOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+    opacity: 0; /* 🔹 Começa invisível */
+    visibility: hidden;
+    transition: opacity 0.4s ease-in-out, visibility 0.3s ease-in-out; /* 🔹 Suaviza a transição */
+}
+
+/* 🔹 Estiliza a imagem dentro do overlay */
+#zoomOverlay img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 10px;
+    transform: scale(0.8); /* 🔹 Inicia menor para efeito de crescimento */
+    transition: transform 0.3s ease-in-out;
+}
+
+/* 🔹 Estiliza o botão de fechar (X) */
+#closeZoom {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 32px;
+    color: white;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1101;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* 🔹 Quando o overlay estiver visível, faz a imagem e o botão aparecerem */
+#zoomOverlay.mostrar {
+    opacity: 1;
+    visibility: visible;
+}
+
+#zoomOverlay.mostrar img {
+    transform: scale(1); /* 🔹 Efeito de crescimento suave */
+}
+
+#zoomOverlay.mostrar #closeZoom {
+    opacity: 1;
+}
+
+
+
+
+
+/* 🔹 Ajuste do conteúdo */
+.content {
+    margin-left: 260px;
+    margin-top: 70px;
+    padding: 20px;
+}
+
+
+@media print {
+    /* Remove sombras, bordas e fundo das divs */
+    .container, .card, .table, .modal-content {
+        background: none !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    /* 🔹 Esconde a sidebar APENAS na impressão */
+    .sidebar {
+        display: none !important;
+    }
+
+    /* 🔹 Ajusta a área do conteúdo para ocupar toda a largura na impressão */
+    .content {
+        margin-left: 0 !important; 
+        width: 100% !important;
+    }
+
+    body {
+        zoom: 100%; /* Ajusta o tamanho para caber melhor em A4 */
+        margin: 0 !important; /* 🔥 Remove qualquer margem no corpo */
+        padding: 0 !important;
+    }
+
+    .container {
+        max-width: 100%;
+        padding: 10px;
+        margin: 0 !important; /* 🔥 Remove qualquer margem que sobrou */
+    }
+
+    .card-body {
+        font-size: 10pt;
+    }
+
+    .table-sm {
+        font-size: 9pt;
+    }
+
+    .btn, .no-print {
+        display: none !important;
+    }
+
+    /* Remove efeitos de botões e elementos desnecessários na impressão */
+    .btn, .no-print, .navbar, .footer, .top-bar {
+        display: none !important;
+    }
+
+    /* Faz as tabelas ocuparem toda a largura da página */
+    .table {
+        width: 100%;
+        border-collapse: collapse !important;
+    }
+
+    .table th, .table td {
+        border: 1px solid black !important; /* Mantém a borda da tabela para organização */
+        padding: 5px;
+        text-align: center;
+    }
+
+    /* Ajusta fontes para melhor legibilidade na impressão */
+    body {
+        font-size: 12pt;
+        color: black;
+        background: white !important;
+    }
+}
+
+@media print {
+    body {
+        zoom: 100%; /* Reduz um pouco o tamanho do conteúdo */
+    }
+
+    .container {
+        max-width: 100%; /* Ajusta para ocupar toda a largura */
+    }
+
+    table {
+        font-size: 10px; /* Reduz o tamanho da fonte da tabela */
+        width: 100%; /* Garante que use toda a largura disponível */
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 2px; /* Diminui os espaços internos */
+        text-align: center;
+    }
+
+    h2, h4 {
+        font-size: 14px; /* Ajusta os títulos para não ocuparem muito espaço */
+    }
+
+    .btn, .no-print {
+        display: none !important; /* Remove botões e elementos desnecessários na impressão */
+    }
+}
+@media print {
+    /* Oculta o formulário e botões */
+    form, .btn, .alert-success, .alert-danger, .alert-warning, .navbar, .sidebar, .footer {
+        display: none !important;
+    }
+
+    /* Ajusta o layout da área de impressão */
+    .alert-info {
+        margin-top: 0;
+    }
+
+    .table {
+        width: 100%;
+        border: 1px solid #000;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+
+    .table th, .table td {
+        border: 1px solid #000;
+        padding: 4px;
+    }
+
+    /* Título ajustado para impressão */
+    h2 {
+        margin-top: 0;
+    }
+
+    body {
+        background: #fff;
+        color: #000;
+    }
+
+    /* Remove borda, sombra ou elementos decorativos que gastam espaço */
+    .card, .box, .panel {
+        box-shadow: none !important;
+        border: none !important;
+    }
+}
+
+/* Estilo quando estiver em modo tela cheia */
+.content.expandido {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    transition: all 0.3s ease;
+}
+
+/* Se a .content tiver um padding/margin lateral fixo, pode ajustar aqui também */
+
+
+.toggle-sidebar-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 9999;
+    background-color: #0d6efd; /* azul padrão Bootstrap */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.toggle-sidebar-btn:hover {
+    background-color: #0b5ed7; /* azul hover */
+}
+
+body.hide-sidebar .sidebar {
+    width: 0 !important;
+    overflow: hidden;
+}
+
+body.hide-sidebar .content {
+    margin-left: 0 !important;
+}
+
+.sidebar {
+    transition: all 0.3s ease;
+}
+
+
+.motivo-select {
+    background-color: #ffc107 !important;
+    border: 2px solid #000000 !important;
+    color: #0a0a0a;
+    font-weight: 600;
+
+    min-width: 70px;      /* Garante largura mínima */
+}
+
+
+
+
+
+
+.btn-selecionar-matriz {
+    background-color: #007bff;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 10px 16px;
+    border-radius: 10px;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-selecionar-matriz:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.btn-selecionar-matriz i {
+    font-size: 1rem;
+}
+
+@media print {
+    .no-print {
+      display: none !important;
+    }
+  }
+
+.form-select {
+    border: 1.5px solid #666;
+}
+
+.select2-container--default .select2-selection--single {
+    border: 1.5px solid #666 !important;
+    border-radius: 8px;
+}
+
+.esteira-1 {
+    background-color: #c8e6c9 !important; /* Verde claro */
+    color: #1b5e20 !important;
+}
+
+.esteira-2 {
+    background-color: #bbdefb !important; /* Azul claro */
+    color: #0d47a1 !important;
+}
+
+.esteira-3 {
+    background-color: #ffe0b2 !important; /* Laranja claro */
+    color: #e65100 !important;
+}
+
+/* cor escura para opções selecionadas */
+.select2-results__option[aria-selected=true] {
+    background-color: #0d6efd !important;
+    color: white;
+}
+
+/* Remove a borda azul de foco do switch */
+.form-check-input:focus {
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+}
+
+/* Personaliza ainda mais o botão switch para evitar contraste feio */
+.form-check-input {
+    border-color: transparent !important;
+}
+
+
+
+.setor-radio:not(:checked) {
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.6);
+}
+
+.referencia-ativa {
+    background-color: #28a745 !important;
+    color: black !important;
+}
+
+@media print {
+    .bg-dark { background-color: #343a40 !important; color: white !important; }
+    .bg-primary { background-color: #0d6efd !important; color: white !important; }
+    .bg-warning { background-color: #ffc107 !important; color: #212529 !important; }
+    .bg-info { background-color: #0dcaf0 !important; color: #212529 !important; }
+    .bg-success { background-color: #198754 !important; color: white !important; }
+    .bg-danger { background-color: #dc3545 !important; color: white !important; }
+    .bg-secondary { background-color: #6c757d !important; color: white !important; }
+    .bg-dark.text-white { color: white !important; }
+
+    .badge.bg-warning { background-color: #ffc107 !important; color: #212529 !important; }
+    .badge.bg-danger { background-color: #dc3545 !important; color: white !important; }
+    .badge.bg-success { background-color: #198754 !important; color: white !important; }
+    .badge.bg-info { background-color: #0dcaf0 !important; color: #212529 !important; }
+    .badge.bg-secondary { background-color: #6c757d !important; color: white !important; }
+
+    body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+
+@media print {
+  .row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+
+  .col-md-4 {
+    flex: 0 0 33.3333% !important;
+    max-width: 33.3333% !important;
+    box-sizing: border-box;
+    padding: 0.5rem;
+  }
+
+  .mb-3 {
+    margin-bottom: 1rem !important;
+  }
+}
+
+@media print {
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .container, .card-body {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    .top-bar, .content {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    /* Remove margens internas adicionais */
+    .mt-4, .mt-3, .mt-2 {
+        margin-top: 4px !important;
+    }
+
+    h2 {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    /* Reduz espaço entre elementos para otimizar altura */
+    hr {
+        margin: 6px 0 !important;
+    }
+
+    /* Ajusta imagem */
+    img {
+        max-height: 100px !important;
+        margin-top: 4px !important;
+        margin-bottom: 4px !important;
+    }
+}
+
+.form-check-input[type="checkbox"] {
+    accent-color: #007bff;             /* azul quando marcado */
+    border: 1.5px solid #999 !important;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-check-input[type="checkbox"]:not(:checked) {
+    background-color: #f0f0f0; /* fundo cinza claro só quando desmarcado */
+}
+

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Alterar Senha</h2>
+
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="col-md-3">
+            <label for="senha_atual" class="form-label">Senha Atual</label>
+            {{ form.senha_atual(class="form-control") }}
+        </div>
+
+        <div class="col-md-3">
+            <label for="nova_senha" class="form-label">Nova Senha</label>
+            {{ form.nova_senha(class="form-control") }}
+            <small class="text-muted">
+                A senha deve conter pelo menos:
+                <ul>
+                    <li>6 caracteres</li>
+                    <li>Uma letra maiúscula (A-Z)</li>
+                    <li>Uma letra minúscula (a-z)</li>
+                    <li>Um número (0-9)</li>
+               <!-- <li>Um símbolo (!@#$%^&*...)</li> -->
+                </ul>
+            </small>
+        </div>
+        <div class="col-md-3">
+            <label for="confirmar_senha" class="form-label">Confirmar Nova Senha</label>
+            {{ form.confirmar_senha(class="form-control") }}
+        </div>
+        <hr>
+        <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+        <a href="{{ url_for('routes.home') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

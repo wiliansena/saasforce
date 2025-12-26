@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid mt-3">
+
+  <h4 class="mb-3">Vendas de Streaming</h4>
+  <br>
+
+<div class="d-flex gap-2 mb-3 flex-wrap">
+  <a href="{{ url_for('routes.stv_vendas_servicos') }}" class="btn btn-success">
+    <i class="fas fa-plus"></i> Nova venda
+  </a>
+
+  <a href="{{ url_for(
+        'routes.stv_relatorio_vendas_pdf',
+        data_ini=request.args.get('data_ini'),
+        data_fim=request.args.get('data_fim'),
+        vendedor_id=request.args.get('vendedor_id'),
+        status=request.args.get('status')
+      ) }}"
+     target="_blank"
+     class="btn btn-outline-danger">
+    📄 Gerar PDF
+  </a>
+</div>
+
+
+  <hr>
+
+  <form method="GET" class="row g-2 mb-3">
+    <div class="col-md-3">
+      <input type="date" name="data_ini" class="form-control"
+             value="{{ request.args.get('data_ini','') }}">
+    </div>
+
+    <div class="col-md-3">
+      <input type="date" name="data_fim" class="form-control"
+             value="{{ request.args.get('data_fim','') }}">
+    </div>
+
+    <div class="col-md-3">
+      <select name="vendedor_id" class="form-control">
+        <option value="">Todos vendedores</option>
+        {% for v in vendedores %}
+          <option value="{{ v.id }}"
+            {% if request.args.get('vendedor_id') == v.id|string %}selected{% endif %}>
+            {{ v.nome }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <button class="btn btn-primary w-100">Filtrar</button>
+    </div>
+  </form>
+
+<div class="row mb-3">
+  <div class="col-md-4">
+    <div class="input-group input-group-sm">
+      <span class="input-group-text">
+        <i class="fas fa-search"></i>
+      </span>
+      <input type="text"
+             id="busca"
+             class="form-control"
+             placeholder="Pesquisar cliente, telefone ou serviço">
+    </div>
+  </div>
+</div>
+
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Data</th>
+          <th>Vendedor</th>
+          <th>Cliente</th>
+          <th>Conta</th>
+          <th>Serviço</th>
+          <th>Tela</th>   
+          <th>Valor</th>
+          <th>Comissão</th>
+          <th>Status</th>
+          <th width="160">Ações</th>
+        </tr>
+      </thead>
+
+      <tbody id="tabela">
+        {% for v in vendas %}
+        <tr>
+          <td>{{v.data_venda|br_data}}</td>
+          <td>{{ v.vendedor.nome }}</td>
+          <td>{{ v.cliente.nome }}</td>
+          <td>{{ v.tela.conta.email if v.tela and v.tela.conta else '-' }}</td>
+
+          <td>{{ v.servico.nome }}</td>
+          <td>{{v.tela.numero or '-'}}</td>
+          <td>{{v.valor_venda}}</td>
+          <td>{{v.valor_comissao}}</td>
+          <td>
+            {% if v.status == 'ATIVA' %}
+              <span class="badge bg-success">Ativa</span>
+            {% elif v.status == 'PENDENTE' %}
+              <span class="badge bg-warning text-dark">Pendente</span>
+            {% else %}
+              <span class="badge bg-secondary">Cancelada</span>
+            {% endif %}
+          </td>
+
+          <td class="d-flex gap-1">
+
+            {# 🔹 FINALIZAR — somente pendente #}
+            {% if v.status == 'PENDENTE' %}
+              <a href="{{ url_for('routes.stv_finalizar_venda', venda_id=v.id) }}"
+                 class="btn btn-sm btn-success">
+                Finalizar
+              </a>
+            {% endif %}
+
+            {# 🔹 CANCELAR — somente se NÃO estiver cancelada #}
+            {% if v.status != 'CANCELADA' %}
+              <form method="POST"
+                    action="{{ url_for('routes.stv_cancelar_venda', venda_id=v.id) }}"
+                    onsubmit="return confirm('Deseja realmente cancelar esta venda e liberar a tela?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-sm btn-warning">
+                  Cancelar
+                </button>
+              </form>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% if vendas.pages > 1 %}
+<nav class="mt-3">
+  <ul class="pagination justify-content-center">
+
+    {% if vendas.has_prev %}
+      <li class="page-item">
+        <a class="page-link"
+           href="{{ url_for('routes.stv_listar_vendas', page=vendas.prev_num, **request.args) }}">
+          «
+        </a>
+      </li>
+    {% endif %}
+
+    {% for p in vendas.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+      {% if p %}
+        <li class="page-item {% if p == vendas.page %}active{% endif %}">
+          <a class="page-link"
+             href="{{ url_for('routes.stv_listar_vendas', page=p, **request.args) }}">
+            {{ p }}
+          </a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if vendas.has_next %}
+      <li class="page-item">
+        <a class="page-link"
+           href="{{ url_for('routes.stv_listar_vendas', page=vendas.next_num, **request.args) }}">
+          »
+        </a>
+      </li>
+    {% endif %}
+
+  </ul>
+</nav>
+{% endif %}
+
+<script>
+  document.getElementById("busca").addEventListener("keyup", function () {
+    const valor = this.value.toLowerCase();
+    document.querySelectorAll("#tabela tr").forEach(tr => {
+      tr.style.display = tr.innerText.toLowerCase().includes(valor) ? "" : "none";
+    });
+  });
+</script>
+
+{% endblock %}

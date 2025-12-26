@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid mt-3">
+    <h4 class="mb-3">Importar Contas de Streaming</h4>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <p>
+                Utilize o modelo padrão para importar múltiplas contas de uma vez.
+            </p>
+
+            <a href="{{ url_for('routes.stv_baixar_modelo_contas') }}"
+               class="btn btn-outline-primary mb-3">
+                Baixar modelo Excel
+            </a>
+
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="mb-3">
+                    <label class="form-label">Arquivo Excel</label>
+                    <input type="file"
+                           name="arquivo"
+                           class="form-control"
+                           accept=".xlsx,.xls"
+                           required>
+                </div>
+
+                <button class="btn btn-success">
+                    Importar Contas
+                </button>
+
+                <a href="{{ url_for('routes.stv_listar_contas') }}"
+                   class="btn btn-secondary ms-2">
+                    Voltar
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
