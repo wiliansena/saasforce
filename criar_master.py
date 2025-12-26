@@ -18,9 +18,10 @@ with app.app_context():
         master = Usuario(
             nome="root",
             is_master=True,
-            is_admin_empresa=True
+            is_admin_empresa=True,
             empresa_id=None   # 🔒 MASTER NÃO TEM EMPRESA
         )
+
         master.set_password("root123")
 
         db.session.add(master)
@@ -28,6 +29,7 @@ with app.app_context():
 
         print("✅ Usuário MASTER criado com sucesso")
         print("   Login: root")
-        print("   Senha: root123")
+        print("   Senha: Fkj7byqH")
     else:
         print("ℹ️ Usuário MASTER já existe. Nenhuma ação necessária.")
+

@@ -14,7 +14,7 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = os.getenv(
         'DATABASE_URL',
-        'postgresql://postgres:Wskj7byqH@localhost/stvhd'
+        'postgresql://saasforce:Fkj7byqH@localhost/saasforce'
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
