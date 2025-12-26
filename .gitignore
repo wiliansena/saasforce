@@ -1,27 +1,31 @@
-# Ignorar diretório do ambiente virtual
+# ===== Ambiente virtual =====
 venv/
+.venv/
 
-# Ignorar arquivos de cache do Python
+# ===== Variáveis de ambiente =====
+.env
+.flaskenv
+
+# ===== Cache Python =====
 __pycache__/
 *.pyc
-*.pyo
-*.log
 
-# Ignorar banco de dados local
+# ===== Banco de dados local =====
 instance/
 *.sqlite
 *.db
 
-# Ignorar configurações locais do ambiente
-.env
-.flaskenv
-
-# Ignorar uploads de imagens (se quiser manter localmente)
+# ===== Uploads (gerados em runtime) =====
 app/static/uploads/
 
-# Ignorar migrações do Alembic (se necessário)
-migrations/
-
-# Ignorar arquivos de cache de editores de código
+# ===== IDEs / Editores =====
 .vscode/
 .idea/
+
+# ===== Arquivos de SO =====
+.DS_Store
+Thumbs.db
+
+# ===== Arquivos Windows (não usar em produção Linux) =====
+*.bat
+*.exe

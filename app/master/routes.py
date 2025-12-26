@@ -28,7 +28,6 @@ def listar_empresas():
 
 
 
-
 @bp.route("/empresas/nova", methods=["GET", "POST"])
 @login_required
 @requer_master
@@ -38,10 +37,17 @@ def nova_empresa():
 
     if form.validate_on_submit():
 
-        # 🔒 evita duplicidade
+        # 🔒 evita duplicidade de empresa
         existe = Empresa.query.filter_by(nome=form.nome.data).first()
         if existe:
             flash("Já existe uma empresa com esse nome.", "danger")
+            return render_template("master/empresa_nova.html", form=form)
+
+        # 🔒 evita email duplicado
+        email_admin = form.admin_email.data.lower()
+        email_existe = Usuario.query.filter_by(email=email_admin).first()
+        if email_existe:
+            flash("Já existe um usuário com esse e-mail.", "danger")
             return render_template("master/empresa_nova.html", form=form)
 
         try:
@@ -60,11 +66,13 @@ def nova_empresa():
             # =====================================================
             admin = Usuario(
                 nome=form.admin_nome.data,
+                email=email_admin,
                 empresa_id=empresa.id,
                 is_master=False,
                 is_admin_empresa=True
             )
             admin.set_password(form.admin_senha.data)
+
             db.session.add(admin)
             db.session.flush()
 
@@ -88,6 +96,7 @@ def nova_empresa():
             flash(f"Erro ao criar empresa: {str(e)}", "danger")
 
     return render_template("master/empresa_nova.html", form=form)
+
 
 @bp.route("/empresas/<int:empresa_id>")
 @login_required
