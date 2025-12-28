@@ -2,76 +2,162 @@
 {% block content %}
 
 <div class="container-fluid mt-3">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Contas de Streaming</h4>
-        <a href="{{ url_for('routes.stv_nova_conta') }}" class="btn btn-primary">
-            Nova Conta
+
+  <!-- Cabeçalho -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Contas de Streaming</h4>
+
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('routes.stv_nova_conta') }}" class="btn btn-primary">
+        Nova Conta
+      </a>
+
+      <a href="{{ url_for('routes.stv_importar_contas') }}"
+         class="btn btn-outline-success">
+        Importar Excel
+      </a>
+    </div>
+  </div>
+
+  <!-- Busca -->
+  <form method="get" class="row mb-3">
+    <div class="col-md-4">
+      <div class="input-group input-group-sm">
+        <span class="input-group-text">
+          <i class="fas fa-search"></i>
+        </span>
+        <input type="text"
+               name="busca"
+               value="{{ busca }}"
+               class="form-control"
+               placeholder="Pesquisar email, senha ou serviço">
+      </div>
+    </div>
+  </form>
+
+  <!-- Tabela -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Email</th>
+          <th>Senha</th>
+          <th>Serviço</th>
+          <th>Valor Venda</th>
+          <th>Comissão</th>
+          <th>Status</th>
+          <th width="180">Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for c in contas %}
+        <tr>
+          <td>{{ c.email }}</td>
+          <td>{{ c.senha }}</td>
+          <td>{{ c.servico.nome }}</td>
+
+          <td>
+            {% if c.valor_venda_override %}
+              R$ {{ "%.2f"|format(c.valor_venda_override) }}
+            {% else %}
+              R$ {{ "%.2f"|format(c.servico.valor_venda_padrao) }}
+            {% endif %}
+          </td>
+
+          <td>
+            {% if c.comissao_override %}
+              R$ {{ "%.2f"|format(c.comissao_override) }}
+            {% else %}
+              R$ {{ "%.2f"|format(c.servico.comissao_padrao) }}
+            {% endif %}
+          </td>
+
+          <td>
+            {% if c.ativa %}
+              <span class="badge bg-success">Ativa</span>
+            {% else %}
+              <span class="badge bg-secondary">Inativa</span>
+            {% endif %}
+          </td>
+
+          <td>
+            <a href="{{ url_for('routes.stv_editar_conta', id=c.id) }}"
+               class="btn btn-sm btn-warning">
+              Editar
+            </a>
+
+            <form action="{{ url_for('routes.stv_excluir_conta', id=c.id) }}"
+                  method="POST"
+                  class="d-inline"
+                  onsubmit="return confirm('Deseja realmente excluir esta conta?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-danger">Excluir</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" class="text-center text-muted">
+            Nenhuma conta encontrada.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginação -->
+  {% if pagination.pages > 1 %}
+  <nav class="mt-3">
+    <ul class="pagination pagination-sm justify-content-center">
+
+      <!-- Anterior -->
+      <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+        <a class="page-link"
+           href="{{ url_for('routes.stv_listar_contas',
+                            page=pagination.prev_num,
+                            busca=busca) }}">
+          &laquo;
         </a>
-        <a href="{{ url_for('routes.stv_importar_contas') }}"
-   class="btn btn-outline-success ms-2">
-    Importar Excell
-</a>
+      </li>
 
-    </div>
+      {% for p in pagination.iter_pages(
+            left_edge=1,
+            right_edge=1,
+            left_current=2,
+            right_current=2
+          ) %}
+        {% if p %}
+          <li class="page-item {% if p == pagination.page %}active{% endif %}">
+            <a class="page-link"
+               href="{{ url_for('routes.stv_listar_contas',
+                                page=p,
+                                busca=busca) }}">
+              {{ p }}
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">…</span>
+          </li>
+        {% endif %}
+      {% endfor %}
 
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>Email</th>
-                    <th>Senha</th>
-                    <th>Serviço</th>
-                    <th>Valor Venda</th>
-                    <th>Comissão</th>
-                    <th>Status</th>
-                    <th width="180">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for c in contas %}
-                <tr>
-                    <td>{{ c.email }}</td>
-                    <td>{{ c.senha }}</td>
-                    <td>{{ c.servico.nome }}</td>
-                    <td>
-                        {% if c.valor_venda_override %}
-                            R$ {{ "%.2f"|format(c.valor_venda_override) }}
-                        {% else %}
-                            R$ {{ "%.2f"|format(c.servico.valor_venda_padrao) }}
-                        {% endif %}
-                    </td>
-                                        <td>
-                        {% if c.comissao_override %}
-                            R$ {{ "%.2f"|format(c.comissao_override) }}
-                        {% else %}
-                            R$ {{ "%.2f"|format(c.servico.comissao_padrao) }}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if c.ativa %}
-                            <span class="badge bg-success">Ativa</span>
-                        {% else %}
-                            <span class="badge bg-secondary">Inativa</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{{ url_for('routes.stv_editar_conta', id=c.id) }}" class="btn btn-sm btn-warning">
-                            Editar
-                        </a>
+      <!-- Próxima -->
+      <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+        <a class="page-link"
+           href="{{ url_for('routes.stv_listar_contas',
+                            page=pagination.next_num,
+                            busca=busca) }}">
+          &raquo;
+        </a>
+      </li>
 
-                        <form action="{{ url_for('routes.stv_excluir_conta', id=c.id) }}"
-                              method="POST"
-                              class="d-inline"
-                              onsubmit="return confirm('Deseja realmente excluir esta conta?');">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button class="btn btn-sm btn-danger">Excluir</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    </ul>
+  </nav>
+  {% endif %}
+
 </div>
 
 {% endblock %}

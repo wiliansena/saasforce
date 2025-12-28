@@ -14,11 +14,14 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = os.getenv(
         'DATABASE_URL',
-        'postgresql://saasforce:Fkj7byqH@localhost/saasforce'
+        'postgresql://saasforce:Wskj7byqH@localhost/saasforce'
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+
 
     # ==========================
     # 📁 UPLOADS (MULTIEMPRESA)

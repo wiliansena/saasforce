@@ -1,13 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="d-flex align-items-center justify-content-center vh-50">
-    <div class="text-center">
-        <img src="{{ url_for('static', filename='images/logo_stv.png') }}" alt="Logo da Empresa" class="img-fluid mb-4" style="max-width: 300px;">
-        <h1>Bem-vindo!</h1>
-        <p class="text-muted">Controle e gestão de vendas</p>
-        <p class="text-muted">BY: Rootec Sys</p>
-        
+<div class="home-hero">
+    <div class="home-card">
+        <img
+            src="{{ url_for('static', filename='images/logo.png') }}"
+            alt="SaasFX"
+            class="home-logo"
+        >
+
+        <h1 class="home-title">Bem-vindo ao SaasFX</h1>
+
+        <p class="home-subtitle">
+            Controle, análise e gestão de vendas em tempo real
+        </p>
+
+        <div class="home-divider"></div>
+
+        <p class="home-footer">
+            Desenvolvido por <strong> © Rootec Sys - 2025</strong>
+        </p>
     </div>
 </div>
 {% endblock %}

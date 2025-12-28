@@ -5,16 +5,28 @@
 {% block content %}
 
 <h5 class="mb-3 fw-bold text-center">Vender Serviço</h5>
+
+<!-- Pesquisa -->
+<input
+  type="text"
+  id="pesquisaServico"
+  class="form-control mb-3"
+  placeholder="🔍 Buscar serviço..."
+>
+
 <!-- Voltar -->
-  <a href="{{ url_for('routes.home') }}"
-     class="btn btn-outline-info w-100 mt-3">
-    ← Voltar
-  </a>
+<a href="{{ url_for('routes.home') }}"
+   class="btn btn-outline-info w-100 mt-2">
+  ← Voltar
+</a>
+
 <hr>
-<div class="grid">
+
+<div class="grid" id="listaServicos">
 
   {% for d in dados %}
-  <div class="grid-item">
+  <div class="grid-item"
+       data-nome="{{ d.servico.nome | lower }}">
 
     <div class="home-card">
 
@@ -22,7 +34,7 @@
         <img
           src="{{ url_for('static', filename=d.servico.imagem) }}"
           alt="{{ d.servico.nome }}"
-          style="max-height:70px; object-fit:contain;"
+          style="max-height:70px; object-fit:contain; border-radius:12px;"
         >
       {% else %}
         <i class="fas fa-tv"></i>
@@ -55,5 +67,20 @@
   {% endfor %}
 
 </div>
+
+<!-- JS de pesquisa -->
+<script>
+  const input = document.getElementById("pesquisaServico");
+  const itens = document.querySelectorAll("#listaServicos .grid-item");
+
+  input.addEventListener("input", function () {
+    const termo = this.value.toLowerCase().trim();
+
+    itens.forEach(item => {
+      const nome = item.dataset.nome;
+      item.style.display = nome.includes(termo) ? "" : "none";
+    });
+  });
+</script>
 
 {% endblock %}

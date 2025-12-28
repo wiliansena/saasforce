@@ -33,16 +33,35 @@ def teste_stv():
 @requer_permissao("administrativo", "ver")
 def stv_listar_servicos():
 
-    servicos = (
-        Servico.query_empresa()
+    page = request.args.get("page", 1, type=int)
+    per_page = 15
+
+    busca = request.args.get("busca", "").strip()
+
+    query = Servico.query_empresa()
+
+    if busca:
+        busca_ilike = f"%{busca}%"
+        query = query.filter(
+            db.or_(
+                Servico.nome.ilike(busca_ilike),
+                Servico.tipo.ilike(busca_ilike)
+            )
+        )
+
+    pagination = (
+        query
         .order_by(Servico.nome)
-        .all()
+        .paginate(page=page, per_page=per_page, error_out=False)
     )
 
     return render_template(
         "stv/servicos_listar.html",
-        servicos=servicos
+        servicos=pagination.items,
+        pagination=pagination,
+        busca=busca
     )
+
 
 
 @bp.route("/stv/servicos/novo", methods=["GET", "POST"])
@@ -166,17 +185,39 @@ def stv_excluir_servico(id):
 @requer_permissao("administrativo", "ver")
 def stv_listar_contas():
 
-    contas = (
+    page = request.args.get("page", 1, type=int)
+    per_page = 15
+
+    busca = request.args.get("busca", "").strip()
+
+    query = (
         Conta.query_empresa()
         .join(Servico)
+    )
+
+    if busca:
+        busca_ilike = f"%{busca}%"
+        query = query.filter(
+            db.or_(
+                Conta.email.ilike(busca_ilike),
+                Conta.senha.ilike(busca_ilike),
+                Servico.nome.ilike(busca_ilike)
+            )
+        )
+
+    pagination = (
+        query
         .order_by(Servico.nome, Conta.email)
-        .all()
+        .paginate(page=page, per_page=per_page, error_out=False)
     )
 
     return render_template(
         "stv/contas_listar.html",
-        contas=contas
+        contas=pagination.items,
+        pagination=pagination,
+        busca=busca
     )
+
 
 
 @bp.route("/stv/contas/nova", methods=["GET", "POST"])
@@ -473,17 +514,97 @@ def stv_importar_contas():
 @requer_permissao("venda", "ver")
 def stv_listar_vendas():
 
+    page = request.args.get("page", 1, type=int)
+    per_page = 20
+
     data_ini = request.args.get("data_ini")
     data_fim = request.args.get("data_fim")
     status = request.args.get("status")
     vendedor_id = request.args.get("vendedor_id")
-    page = request.args.get("page", 1, type=int)
+    busca = request.args.get("busca", "").strip()
 
     q = (
         VendaStreaming.query_empresa()
         .join(Usuario, Usuario.id == VendaStreaming.vendedor_id)
+        .join(Cliente, Cliente.id == VendaStreaming.cliente_id)  # 👈 ESSENCIAL
         .outerjoin(Tela, Tela.id == VendaStreaming.tela_id)
         .outerjoin(Conta, Conta.id == Tela.conta_id)
+        .join(Servico, Servico.id == VendaStreaming.servico_id)
+    )
+
+    # 🔹 filtros existentes
+    if status:
+        q = q.filter(VendaStreaming.status == status)
+
+    if vendedor_id:
+        q = q.filter(VendaStreaming.vendedor_id == vendedor_id)
+
+    if data_ini:
+        q = q.filter(VendaStreaming.data_venda >= data_ini)
+
+    if data_fim:
+        q = q.filter(VendaStreaming.data_venda <= data_fim)
+
+    # 🔥 BUSCA GLOBAL NO BANCO
+    if busca:
+        b = f"%{busca}%"
+        q = q.filter(
+            db.or_(
+                Usuario.nome.ilike(b),
+                Cliente.nome.ilike(b),
+                Conta.email.ilike(b),
+                Servico.nome.ilike(b),
+                VendaStreaming.status.ilike(b),
+                VendaStreaming.valor_venda.cast(db.String).ilike(b)
+            )
+        )
+
+    vendas = (
+        q.order_by(VendaStreaming.data_venda.desc())
+         .paginate(page=page, per_page=per_page, error_out=False)
+    )
+
+    vendedores = (
+        Usuario.query_empresa()
+        .order_by(Usuario.nome)
+        .all()
+    )
+
+    return render_template(
+        "stv/vendas_listar.html",
+        vendas=vendas,
+        vendedores=vendedores,
+        data_ini=data_ini,
+        data_fim=data_fim,
+        status=status,
+        vendedor_id=vendedor_id,
+        busca=busca
+	)    
+
+
+
+@bp.route("/stv/mobile/vendas")
+@login_required
+@requer_licenca_ativa
+@requer_permissao("venda", "ver")
+def stv_listar_vendas_mobile():
+
+    page = request.args.get("page", 1, type=int)
+    per_page = 10  # menor para mobile
+
+    data_ini = request.args.get("data_ini")
+    data_fim = request.args.get("data_fim")
+    status = request.args.get("status")
+    vendedor_id = request.args.get("vendedor_id")
+    busca = request.args.get("busca", "").strip()
+
+    q = (
+        VendaStreaming.query_empresa()
+        .join(Usuario, Usuario.id == VendaStreaming.vendedor_id)
+        .join(Cliente, Cliente.id == VendaStreaming.cliente_id)
+        .outerjoin(Tela, Tela.id == VendaStreaming.tela_id)
+        .outerjoin(Conta, Conta.id == Tela.conta_id)
+        .join(Servico, Servico.id == VendaStreaming.servico_id)
     )
 
     if status:
@@ -498,25 +619,35 @@ def stv_listar_vendas():
     if data_fim:
         q = q.filter(VendaStreaming.data_venda <= data_fim)
 
-    vendas = q.order_by(
-        VendaStreaming.data_venda.desc()
-    ).paginate(
-        page=page,
-        per_page=20,
-        error_out=False
-    )
+    if busca:
+        b = f"%{busca}%"
+        q = q.filter(
+            db.or_(
+                Cliente.nome.ilike(b),
+                Usuario.nome.ilike(b),
+                Conta.email.ilike(b),
+                Servico.nome.ilike(b),
+                VendaStreaming.status.ilike(b)
+            )
+        )
 
-    vendedores = (
-        Usuario.query_empresa()
-        .order_by(Usuario.nome)
-        .all()
+    vendas = (
+        q.order_by(VendaStreaming.data_venda.desc())
+         .paginate(page=page, per_page=per_page, error_out=False)
     )
 
     return render_template(
-        "stv/vendas_listar.html",
+        "stv/vendas_listar_mobile.html",
         vendas=vendas,
-        vendedores=vendedores
+        data_ini=data_ini,
+        data_fim=data_fim,
+        status=status,
+        vendedor_id=vendedor_id,
+        busca=busca
     )
+
+
+
 
 @bp.route("/stv/vendas/pendentes")
 @login_required

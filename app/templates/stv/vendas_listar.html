@@ -6,72 +6,77 @@
   <h4 class="mb-3">Vendas de Streaming</h4>
   <br>
 
-<div class="d-flex gap-2 mb-3 flex-wrap">
-  <a href="{{ url_for('routes.stv_vendas_servicos') }}" class="btn btn-success">
-    <i class="fas fa-plus"></i> Nova venda
-  </a>
+  <!-- Ações -->
+  <div class="d-flex gap-2 mb-3 flex-wrap">
+    <a href="{{ url_for('routes.stv_vendas_servicos') }}" class="btn btn-success">
+      <i class="fas fa-plus"></i> Nova venda
+    </a>
 
-  <a href="{{ url_for(
-        'routes.stv_relatorio_vendas_pdf',
-        data_ini=request.args.get('data_ini'),
-        data_fim=request.args.get('data_fim'),
-        vendedor_id=request.args.get('vendedor_id'),
-        status=request.args.get('status')
-      ) }}"
-     target="_blank"
-     class="btn btn-outline-danger">
-    📄 Gerar PDF
-  </a>
-</div>
-
+    <a href="{{ url_for(
+          'routes.stv_relatorio_vendas_pdf',
+          data_ini=data_ini,
+          data_fim=data_fim,
+          vendedor_id=vendedor_id,
+          status=status,
+          busca=busca
+        ) }}" target="_blank" class="btn btn-outline-danger">
+      📄 Gerar PDF
+    </a>
+  </div>
 
   <hr>
 
+  <!-- Filtros principais -->
   <form method="GET" class="row g-2 mb-3">
+
     <div class="col-md-3">
-      <input type="date" name="data_ini" class="form-control"
-             value="{{ request.args.get('data_ini','') }}">
+      <input type="date" name="data_ini" class="form-control" value="{{ data_ini or '' }}">
     </div>
 
     <div class="col-md-3">
-      <input type="date" name="data_fim" class="form-control"
-             value="{{ request.args.get('data_fim','') }}">
+      <input type="date" name="data_fim" class="form-control" value="{{ data_fim or '' }}">
     </div>
 
     <div class="col-md-3">
       <select name="vendedor_id" class="form-control">
         <option value="">Todos vendedores</option>
         {% for v in vendedores %}
-          <option value="{{ v.id }}"
-            {% if request.args.get('vendedor_id') == v.id|string %}selected{% endif %}>
-            {{ v.nome }}
-          </option>
+        <option value="{{ v.id }}" {% if vendedor_id==v.id|string %}selected{% endif %}>
+          {{ v.nome }}
+        </option>
         {% endfor %}
       </select>
     </div>
 
     <div class="col-md-3">
-      <button class="btn btn-primary w-100">Filtrar</button>
+      <button class="btn btn-primary w-100">
+        Filtrar
+      </button>
     </div>
+
+    <!-- Busca global (BANCO) -->
+    <div class="col-md-4">
+      <div class="input-group input-group-sm mt-2">
+        <span class="input-group-text">
+          <i class="fas fa-search"></i>
+        </span>
+
+        <input type="text" name="busca" value="{{ busca }}" class="form-control"
+          placeholder="Pesquisar cliente, conta, serviço ou status">
+
+        {% if busca %}
+        <a href="{{ url_for('routes.stv_listar_vendas') }}" class="btn btn-outline-secondary" title="Limpar pesquisa">
+          <i class="fas fa-arrows-rotate"></i>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
   </form>
 
-<div class="row mb-3">
-  <div class="col-md-4">
-    <div class="input-group input-group-sm">
-      <span class="input-group-text">
-        <i class="fas fa-search"></i>
-      </span>
-      <input type="text"
-             id="busca"
-             class="form-control"
-             placeholder="Pesquisar cliente, telefone ou serviço">
-    </div>
-  </div>
-</div>
-
-
+  <!-- Tabela -->
   <div class="table-responsive">
-    <table class="table table-bordered table-hover">
+    <table class="table table-bordered table-hover align-middle">
       <thead class="table-dark">
         <tr>
           <th>Data</th>
@@ -79,7 +84,7 @@
           <th>Cliente</th>
           <th>Conta</th>
           <th>Serviço</th>
-          <th>Tela</th>   
+          <th>Tela</th>
           <th>Valor</th>
           <th>Comissão</th>
           <th>Status</th>
@@ -87,52 +92,62 @@
         </tr>
       </thead>
 
-      <tbody id="tabela">
+      <tbody>
         {% for v in vendas %}
         <tr>
-          <td>{{v.data_venda|br_data}}</td>
+          <td>{{ v.data_venda|br_data }}</td>
           <td>{{ v.vendedor.nome }}</td>
           <td>{{ v.cliente.nome }}</td>
           <td>{{ v.tela.conta.email if v.tela and v.tela.conta else '-' }}</td>
-
           <td>{{ v.servico.nome }}</td>
-          <td>{{v.tela.numero or '-'}}</td>
-          <td>{{v.valor_venda}}</td>
-          <td>{{v.valor_comissao}}</td>
+          <td>{{ v.tela.numero or '-' }}</td>
+          <td>{{ v.valor_venda }}</td>
+          <td>{{ v.valor_comissao }}</td>
+
           <td>
             {% if v.status == 'ATIVA' %}
-              <span class="badge bg-success">Ativa</span>
+            <span class="badge bg-success">Ativa</span>
             {% elif v.status == 'PENDENTE' %}
-              <span class="badge bg-warning text-dark">Pendente</span>
+            <span class="badge bg-warning text-dark">Pendente</span>
             {% else %}
-              <span class="badge bg-secondary">Cancelada</span>
+            <span class="badge bg-secondary">Cancelada</span>
+            {% endif %}
+            {% if v.status == 'ATIVA' %}
+            <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalWhatsapp"
+              data-telefone="{{ v.cliente.telefone }}" data-servico="{{ v.servico.nome }}"
+              data-email="{{ v.tela.conta.email }}" data-senha="{{ v.tela.conta.senha }}">
+              <i class="fab fa-whatsapp"></i>
+            </button>
             {% endif %}
           </td>
 
           <td class="d-flex gap-1">
 
-            {# 🔹 FINALIZAR — somente pendente #}
             {% if v.status == 'PENDENTE' %}
-              <a href="{{ url_for('routes.stv_finalizar_venda', venda_id=v.id) }}"
-                 class="btn btn-sm btn-success">
-                Finalizar
-              </a>
+            <a href="{{ url_for('routes.stv_finalizar_venda', venda_id=v.id) }}" class="btn btn-sm btn-success">
+              Finalizar
+            </a>
             {% endif %}
 
-            {# 🔹 CANCELAR — somente se NÃO estiver cancelada #}
+
             {% if v.status != 'CANCELADA' %}
-              <form method="POST"
-                    action="{{ url_for('routes.stv_cancelar_venda', venda_id=v.id) }}"
-                    onsubmit="return confirm('Deseja realmente cancelar esta venda e liberar a tela?');">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button class="btn btn-sm btn-warning">
-                  Cancelar
-                </button>
-              </form>
+            <form method="POST" action="{{ url_for('routes.stv_cancelar_venda', venda_id=v.id) }}"
+              onsubmit="return confirm('Deseja realmente cancelar esta venda e liberar a tela?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-warning">
+                Cancelar
+              </button>
+            </form>
             {% else %}
-              <span class="text-muted">—</span>
+            <span class="text-muted">—</span>
             {% endif %}
 
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="10" class="text-center text-muted">
+            Nenhuma venda encontrada.
           </td>
         </tr>
         {% endfor %}
@@ -141,52 +156,124 @@
   </div>
 
 </div>
+
+<!-- Paginação -->
 {% if vendas.pages > 1 %}
 <nav class="mt-3">
   <ul class="pagination justify-content-center">
 
-    {% if vendas.has_prev %}
-      <li class="page-item">
-        <a class="page-link"
-           href="{{ url_for('routes.stv_listar_vendas', page=vendas.prev_num, **request.args) }}">
-          «
-        </a>
-      </li>
-    {% endif %}
+    <li class="page-item {% if not vendas.has_prev %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for(
+           'routes.stv_listar_vendas',
+           page=vendas.prev_num,
+           data_ini=data_ini,
+           data_fim=data_fim,
+           vendedor_id=vendedor_id,
+           status=status,
+           busca=busca
+         ) }}">
+        «
+      </a>
+    </li>
 
     {% for p in vendas.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-      {% if p %}
-        <li class="page-item {% if p == vendas.page %}active{% endif %}">
-          <a class="page-link"
-             href="{{ url_for('routes.stv_listar_vendas', page=p, **request.args) }}">
-            {{ p }}
-          </a>
-        </li>
-      {% else %}
-        <li class="page-item disabled"><span class="page-link">…</span></li>
-      {% endif %}
+    {% if p %}
+    <li class="page-item {% if p == vendas.page %}active{% endif %}">
+      <a class="page-link" href="{{ url_for(
+               'routes.stv_listar_vendas',
+               page=p,
+               data_ini=data_ini,
+               data_fim=data_fim,
+               vendedor_id=vendedor_id,
+               status=status,
+               busca=busca
+             ) }}">
+        {{ p }}
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link">…</span>
+    </li>
+    {% endif %}
     {% endfor %}
 
-    {% if vendas.has_next %}
-      <li class="page-item">
-        <a class="page-link"
-           href="{{ url_for('routes.stv_listar_vendas', page=vendas.next_num, **request.args) }}">
-          »
-        </a>
-      </li>
-    {% endif %}
+    <li class="page-item {% if not vendas.has_next %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for(
+           'routes.stv_listar_vendas',
+           page=vendas.next_num,
+           data_ini=data_ini,
+           data_fim=data_fim,
+           vendedor_id=vendedor_id,
+           status=status,
+           busca=busca
+         ) }}">
+        »
+      </a>
+    </li>
 
   </ul>
 </nav>
 {% endif %}
+<div class="modal fade" id="modalWhatsapp" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white border-0">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Mensagem para o Cliente</h5>
+        <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <textarea id="msgWhatsapp" class="form-control mb-3" rows="6" readonly></textarea>
+
+        <button class="btn btn-success w-100 mb-2" onclick="copiarMensagem()">
+          📋 Copiar mensagem
+        </button>
+
+        <a id="btnWhatsapp" href="#" target="_blank" class="btn btn-primary w-100">
+          💬 Abrir WhatsApp
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <script>
-  document.getElementById("busca").addEventListener("keyup", function () {
-    const valor = this.value.toLowerCase();
-    document.querySelectorAll("#tabela tr").forEach(tr => {
-      tr.style.display = tr.innerText.toLowerCase().includes(valor) ? "" : "none";
+  function copiarMensagem() {
+    const t = document.getElementById("msgWhatsapp");
+    t.select();
+    document.execCommand("copy");
+  }
+
+  document.getElementById("modalWhatsapp")
+    .addEventListener("show.bs.modal", function (event) {
+
+      const btn = event.relatedTarget;
+
+      const telefone = (btn.dataset.telefone || "").replace(/\D/g, "");
+      const servico = btn.dataset.servico;
+      const email = btn.dataset.email;
+      const senha = btn.dataset.senha;
+
+      const msg = `*${servico.toUpperCase()}*
+
+👤 email: ${email}
+🔑 senha: ${senha}
+
+Agradecemos a preferência! ✅🍿`;
+
+      const textarea = document.getElementById("msgWhatsapp");
+      textarea.value = msg;
+
+      if (telefone) {
+        document.getElementById("btnWhatsapp").href =
+          `https://wa.me/55${telefone}?text=${encodeURIComponent(msg)}`;
+      }
     });
-  });
 </script>
+
 
 {% endblock %}

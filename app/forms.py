@@ -1,3 +1,4 @@
+
 from decimal import Decimal
 from typing import Optional
 from flask_wtf import FlaskForm
@@ -11,7 +12,7 @@ from datetime import date
 from wtforms.validators import DataRequired, Length
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField
-from wtforms.validators import DataRequired, Length, EqualTo
+from wtforms.validators import DataRequired, InputRequired, Length, EqualTo
 
 from flask_wtf import FlaskForm
 
@@ -38,9 +39,9 @@ class ServicoForm(FlaskForm):
             ("individual", "Individual"),
         ],validators=[DataRequired()])
     telas_total = IntegerField("Total de Telas", validators=[Optional(), NumberRange(min=1)])
-    valor_investido = DecimalField("Valor Investido", places=2, validators=[DataRequired()])
-    valor_venda_padrao = DecimalField("Valor Venda Padrão", places=2, validators=[DataRequired()])
-    comissao_padrao = DecimalField("Comissão padrão", places=2, validators=[DataRequired()])
+    valor_investido = DecimalField("Valor Investido", places=2, validators=[InputRequired()])
+    valor_venda_padrao = DecimalField("Valor Venda Padrão", places=2, validators=[InputRequired()])
+    comissao_padrao = DecimalField("Comissão padrão", places=2, validators=[InputRequired()])
     ativo = BooleanField("Ativo")
     imagem = FileField("Imagem do Serviço")
 

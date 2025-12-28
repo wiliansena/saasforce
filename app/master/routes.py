@@ -6,7 +6,8 @@ from app.master import bp
 from app.utils_master import requer_master
 from app.master.forms import NovaEmpresaForm
 from app import db
-from app.models import Empresa, Usuario, LicencaSistema
+from app.models import Empresa, Usuario, LicencaSistema, Permissao
+
 
 
 @bp.route("/empresas")
@@ -27,7 +28,6 @@ def listar_empresas():
     )
 
 
-
 @bp.route("/empresas/nova", methods=["GET", "POST"])
 @login_required
 @requer_master
@@ -43,7 +43,7 @@ def nova_empresa():
             flash("Já existe uma empresa com esse nome.", "danger")
             return render_template("master/empresa_nova.html", form=form)
 
-        # 🔒 evita email duplicado
+        # 🔒 evita email duplicado (GLOBAL)
         email_admin = form.admin_email.data.lower()
         email_existe = Usuario.query.filter_by(email=email_admin).first()
         if email_existe:
@@ -74,10 +74,31 @@ def nova_empresa():
             admin.set_password(form.admin_senha.data)
 
             db.session.add(admin)
-            db.session.flush()
+            db.session.flush()  # garante admin.id
 
             # =====================================================
-            # 3️⃣ LICENÇA
+            # 3️⃣ PERMISSÕES PADRÃO DO ADMIN
+            # =====================================================
+            permissoes_admin = {
+                "venda": ["criar", "ver", "editar", "excluir"],
+                "administrativo": ["criar", "ver", "editar", "excluir"],
+                "usuarios": ["criar", "ver", "editar", "excluir"],
+                "trocar_senha": ["editar"],
+            }
+
+            for categoria, acoes in permissoes_admin.items():
+                for acao in acoes:
+                    db.session.add(
+                        Permissao(
+                            empresa_id=empresa.id,
+                            usuario_id=admin.id,
+                            categoria=categoria,
+                            acao=acao
+                        )
+                    )
+
+            # =====================================================
+            # 4️⃣ LICENÇA
             # =====================================================
             licenca = LicencaSistema(
                 empresa_id=empresa.id,
@@ -109,6 +130,11 @@ def detalhe_empresa(empresa_id):
         empresa_id=empresa.id
     ).order_by(Usuario.nome).all()
 
+    usuario_padrao = Usuario.query.filter_by(
+        empresa_id=empresa.id
+    ).order_by(Usuario.id.asc()).first()
+
+
     licenca = LicencaSistema.query.filter_by(
         empresa_id=empresa.id
     ).first()
@@ -117,7 +143,8 @@ def detalhe_empresa(empresa_id):
         "master/empresa_detalhe.html",
         empresa=empresa,
         usuarios=usuarios,
-        licenca=licenca
+        licenca=licenca,
+        usuario_padrao=usuario_padrao
     )
 
 @bp.route("/empresas/<int:empresa_id>/desativar", methods=["POST"])

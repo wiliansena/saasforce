@@ -13,6 +13,7 @@
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
+                <th>Email</th>
                 <th class="text-center">Ações</th>
             </tr>
         </thead>
@@ -21,6 +22,7 @@
             <tr>
                 <td>{{ usuario.id }}</td>
                 <td>{{ usuario.nome }}</td>
+                <td>{{usuario.email}}</td>
                 <td class="text-center">
                     <a href="{{ url_for('routes.gerenciar_permissoes', id=usuario.id) }}"
                         class="btn btn-primary btn-sm">

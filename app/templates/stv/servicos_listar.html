@@ -2,74 +2,167 @@
 {% block content %}
 
 <div class="container-fluid mt-3">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Serviços de Streaming</h4>
-        <a href="{{ url_for('routes.stv_novo_servico') }}" class="btn btn-primary">
-            Novo Serviço
+
+  <!-- Cabeçalho -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Serviços de Streaming</h4>
+
+    <a href="{{ url_for('routes.stv_novo_servico') }}"
+       class="btn btn-primary">
+      Novo Serviço
+    </a>
+  </div>
+
+  <!-- Busca -->
+  <form method="get" class="row mb-3">
+    <div class="col-md-4">
+      <div class="input-group input-group-sm">
+        <span class="input-group-text">
+          <i class="fas fa-search"></i>
+        </span>
+        <input type="text"
+               name="busca"
+               value="{{ busca }}"
+               class="form-control"
+               placeholder="Pesquisar nome ou tipo do serviço">
+      </div>
+    </div>
+  </form>
+
+  <!-- Tabela -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Nome</th>
+          <th>Imagem</th>
+          <th>Tipo</th>
+          <th>Telas</th>
+          <th>Investido</th>
+          <th>Valor venda</th>
+          <th>Comissão</th>
+          <th>Status</th>
+          <th width="180">Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for s in servicos %}
+        <tr>
+          <td>{{ s.nome }}</td>
+
+          <td>
+            {% if s.imagem %}
+              <img
+                src="{{ url_for('static', filename=s.imagem) }}"
+                alt="{{ s.nome }}"
+                style="height:60px; border-radius:8px;"
+              >
+            {% else %}
+              <span class="text-muted">Sem imagem</span>
+            {% endif %}
+          </td>
+
+          <td>{{ s.tipo|capitalize }}</td>
+          <td>{{ s.telas_total }}</td>
+          <td>R$ {{ "%.2f"|format(s.valor_investido) }}</td>
+          <td>R$ {{ "%.2f"|format(s.valor_venda_padrao) }}</td>
+          <td>R$ {{ "%.2f"|format(s.comissao_padrao) }}</td>
+
+          <td>
+            {% if s.ativo %}
+              <span class="badge bg-success">Ativo</span>
+            {% else %}
+              <span class="badge bg-secondary">Inativo</span>
+            {% endif %}
+          </td>
+
+          <td>
+            <a href="{{ url_for('routes.stv_editar_servico', id=s.id) }}"
+               class="btn btn-sm btn-warning">
+              Editar
+            </a>
+
+            <form action="{{ url_for('routes.stv_excluir_servico', id=s.id) }}"
+                  method="POST"
+                  class="d-inline"
+                  onsubmit="return confirm('Deseja realmente excluir este serviço?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-danger">
+                Excluir
+              </button>
+            </form>
+          </td>
+        </tr>
+
+        {% else %}
+        <tr>
+          <td colspan="9" class="text-center text-muted">
+            Nenhum serviço encontrado.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginação -->
+  {% if pagination.pages > 1 %}
+  <nav class="mt-3">
+    <ul class="pagination pagination-sm justify-content-center">
+
+      <!-- Anterior -->
+      <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+        <a class="page-link"
+           href="{{ url_for(
+             'routes.stv_listar_servicos',
+             page=pagination.prev_num,
+             busca=busca
+           ) }}">
+          &laquo;
         </a>
-    </div>
+      </li>
 
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>Nome</th>
-                    <th>Imagem</th>
-                    <th>Tipo</th>
-                    <th>Telas</th>
-                    <th>Investido</th>
-                    <th>Valor venda</th>
-                    <th>Comissão</th>
-                    <th>Status</th>
-                    <th width="180">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for s in servicos %}
-                <tr>
-                    <td>{{ s.nome }}</td>
-                    <td>
-                    {% if s.imagem %}
-                    <img
-                        src="{{ url_for('static', filename=s.imagem) }}"
-                        alt="{{ s.nome }}"
-                        style="height:60px; border-radius:8px;"
-                    >
-                    {% else %}
-                    <span class="text-muted">Sem imagem</span>
-                    {% endif %}
+      {% for p in pagination.iter_pages(
+            left_edge=1,
+            right_edge=1,
+            left_current=2,
+            right_current=2
+          ) %}
+        {% if p %}
+          <li class="page-item {% if p == pagination.page %}active{% endif %}">
+            <a class="page-link"
+               href="{{ url_for(
+                 'routes.stv_listar_servicos',
+                 page=p,
+                 busca=busca
+               ) }}">
+              {{ p }}
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">…</span>
+          </li>
+        {% endif %}
+      {% endfor %}
 
-                </td>
-                    <td>{{ s.tipo|capitalize }}</td>
-                    <td>{{ s.telas_total }}</td>
-                    <td>R$ {{ "%.2f"|format(s.valor_investido) }}</td>
-                    <td>R$ {{ "%.2f"|format(s.valor_venda_padrao) }}</td>
-                    <td>R$ {{ "%.2f"|format(s.comissao_padrao) }}</td>
-                    <td>
-                        {% if s.ativo %}
-                            <span class="badge bg-success">Ativo</span>
-                        {% else %}
-                            <span class="badge bg-secondary">Inativo</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{{ url_for('routes.stv_editar_servico', id=s.id) }}" class="btn btn-sm btn-warning">
-                            Editar
-                        </a>
+      <!-- Próxima -->
+      <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+        <a class="page-link"
+           href="{{ url_for(
+             'routes.stv_listar_servicos',
+             page=pagination.next_num,
+             busca=busca
+           ) }}">
+          &raquo;
+        </a>
+      </li>
 
-                        <form action="{{ url_for('routes.stv_excluir_servico', id=s.id) }}"
-                              method="POST"
-                              class="d-inline"
-                              onsubmit="return confirm('Deseja realmente excluir este serviço?');">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button class="btn btn-sm btn-danger">Excluir</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    </ul>
+  </nav>
+  {% endif %}
+
 </div>
 
 {% endblock %}

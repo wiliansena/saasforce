@@ -5,17 +5,18 @@
 {% block content %}
 
 <h5 class="text-center fw-bold mb-3">Vendas Pendentes</h5>
+
 <!-- Voltar -->
-  <a href="{{ url_for('routes.home') }}"
-     class="btn btn-outline-info w-100 mt-3">
-    ← Voltar
-  </a>
-<hr>
+<a href="{{ url_for('routes.home') }}"
+   class="btn btn-outline-info w-100 mb-3">
+  ← Voltar
+</a>
+
 <!-- BUSCA -->
 <input type="text"
        id="busca"
        class="form-control mb-3"
-       placeholder="Buscar por cliente, serviço, data...">
+       placeholder="Buscar por cliente, serviço, vendedor...">
 
 {% if vendas_pendentes %}
 <div class="d-flex flex-column gap-3" id="listaVendas">
@@ -23,20 +24,36 @@
   {% for venda in vendas_pendentes %}
   <div class="card p-3 venda-item">
 
-    <div class="fw-bold venda-texto">
+    <!-- CLIENTE (principal) -->
+    <div class="fw-bold fs-6 mb-1">
       {{ venda.cliente.nome }}
     </div>
 
-    <div class="text-info small fw-semibold venda-texto">
-      {{ venda.servico.nome }}
+    <!-- SERVIÇO (badge) -->
+    <div class="mb-2">
+      <span class="badge bg-info text-dark">
+        {{ venda.servico.nome }}
+      </span>
     </div>
 
-    <div class="text-muted small venda-texto">
-      {{ venda.data_venda.strftime('%d/%m/%Y %H:%M') if venda.data_venda }}
+    <!-- META INFORMAÇÕES -->
+    <div class="d-flex flex-column gap-1 small text-muted">
+
+      <div>
+        <i class="bi bi-person-circle me-1"></i>
+        <strong>Vendedor:</strong> {{ venda.vendedor.nome }}
+      </div>
+
+      <div>
+        <i class="bi bi-calendar-event me-1"></i>
+        {{ venda.data_venda.strftime('%d/%m/%Y %H:%M') if venda.data_venda }}
+      </div>
+
     </div>
 
+    <!-- AÇÃO -->
     <a href="{{ url_for('routes.stv_finalizar_venda', venda_id=venda.id) }}"
-       class="btn btn-success w-100 fw-bold mt-2">
+       class="btn btn-success w-100 fw-bold mt-3">
       Finalizar Venda
     </a>
 
