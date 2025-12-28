@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4" style="max-width:500px">
+{% include "_flash_messages.html" %}
+
+  <h4 class="mb-3">
+    🔐 Resetar senha
+  </h4>
+
+  <div class="alert alert-info">
+    Empresa: <strong>{{ empresa.nome }}</strong><br>
+    Usuário: <strong>{{ usuario.nome }}</strong><br>
+    Email: {{ usuario.email }}
+  </div>
+
+  <form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+      {{ form.nova_senha.label(class="form-label") }}
+      {{ form.nova_senha(class="form-control") }}
+    </div>
+
+    <button class="btn btn-danger">
+      🔄 Resetar senha
+    </button>
+
+    <a href="{{ url_for('master.detalhe_empresa', empresa_id=empresa.id) }}"
+       class="btn btn-secondary ms-2">
+      Cancelar
+    </a>
+  </form>
+
+</div>
+
+{% endblock %}

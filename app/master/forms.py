@@ -1,6 +1,18 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField
 from wtforms.validators import DataRequired, Email, Length
+from wtforms import PasswordField, SubmitField
+
+
+class ResetSenhaUsuarioForm(FlaskForm):
+    nova_senha = PasswordField(
+        "Nova senha",
+        validators=[
+            DataRequired(),
+            Length(min=6, message="A senha deve ter no mínimo 6 caracteres.")
+        ]
+    )
+    submit = SubmitField("Resetar senha")
 
 class NovaEmpresaForm(FlaskForm):
     nome = StringField(

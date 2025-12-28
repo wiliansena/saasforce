@@ -208,3 +208,39 @@ def renovar_licenca(empresa_id):
 
     flash("Licença renovada por mais 30 dias.", "success")
     return redirect(url_for("master.listar_empresas"))
+
+from app.master.forms import ResetSenhaUsuarioForm
+
+@bp.route("/empresas/<int:empresa_id>/usuarios/<int:usuario_id>/resetar_senha",
+          methods=["GET", "POST"])
+@login_required
+@requer_master
+def resetar_senha_usuario_empresa(empresa_id, usuario_id):
+
+    empresa = Empresa.query.get_or_404(empresa_id)
+
+    usuario = Usuario.query.filter_by(
+        id=usuario_id,
+        empresa_id=empresa.id
+    ).first_or_404()
+
+    form = ResetSenhaUsuarioForm()
+
+    if form.validate_on_submit():
+        usuario.set_password(form.nova_senha.data)
+        db.session.commit()
+
+        flash(
+            f"Senha do usuário '{usuario.nome}' resetada com sucesso.",
+            "success"
+        )
+        return redirect(
+            url_for("master.detalhe_empresa", empresa_id=empresa.id)
+        )
+
+    return render_template(
+        "master/resetar_senha_usuario.html",
+        empresa=empresa,
+        usuario=usuario,
+        form=form
+    )
