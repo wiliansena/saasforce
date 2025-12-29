@@ -1237,7 +1237,7 @@ def stv_bi_ranking_vendedores():
 from datetime import date, timedelta
 from flask import make_response, request, render_template
 from weasyprint import HTML
-from sqlalchemy import func
+from sqlalchemy import func, text
 
 @bp.route("/stv/relatorios/comissao_vendedores/pdf")
 @login_required
