@@ -1107,7 +1107,9 @@ def stv_bi_vendido_por_dia():
 
     q = (
         db.session.query(
-            func.date(VendaStreaming.data_venda).label("dia"),
+            func.date(
+                func.timezone('America/Sao_Paulo', VendaStreaming.data_venda)
+            ).label("dia"),
             func.sum(VendaStreaming.valor_venda).label("total")
         )
         .filter(
@@ -1115,6 +1117,7 @@ def stv_bi_vendido_por_dia():
             VendaStreaming.status.in_(["ATIVA", "PENDENTE"])
         )
     )
+
 
     if dt_ini:
         q = q.filter(VendaStreaming.data_venda >= dt_ini)
