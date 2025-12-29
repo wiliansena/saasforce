@@ -93,8 +93,13 @@
                 Vendas</a>
             <a href="{{ url_for('routes.stv_vendas_servicos') }}"><i class="fas fa-plus"></i>
                 Nova venda</a>
-            <a href="{{ url_for('routes.stv_bi_ranking_vendedores') }}"><i class="fa-solid fa-trophy"></i>
+            
+            <a href="{{ url_for('routes.stv_bi_ranking_vendedores') }}"><i class="fas fa-trophy"></i>
                 Ranking vendedores</a>
+
+                
+            <a href="{{ url_for('routes.stv_bi_comissao_vendedores') }}"><i class="fas fa-coins"></i>
+                Comissões vendedores</a>
 
         </div>
         {% endif %}

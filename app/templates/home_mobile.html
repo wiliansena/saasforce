@@ -163,7 +163,16 @@
       <div class="grid-item">
         <a href="{{ url_for('routes.stv_bi_ranking_vendedores') }}" class="home-card">
           <i class="fas fa-trophy"></i>
-          <span>RANKING VENDEDORES</span>
+          <span>TOP VENDEDORES</span>
+        </a>
+      </div>
+      {% endif %}
+
+      {% if ('venda', 'ver') in g.permissoes %}
+      <div class="grid-item">
+        <a href="{{ url_for('routes.stv_bi_comissao_vendedores') }}" class="home-card">
+          <i class="fas fa-coins"></i>
+          <span>COMISSÕES</span>
         </a>
       </div>
       {% endif %}

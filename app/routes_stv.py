@@ -1095,6 +1095,29 @@ def stv_bi_comissao_por_vendedor():
         for v, t in q.all()
     ])
 
+@bp.route("/stv/bi/ranking_vendedores")
+@login_required
+@requer_permissao("venda", "ver")
+def stv_bi_ranking_vendedores():
+
+    hoje = date.today()
+
+    data_ini = request.args.get(
+        "data_ini",
+        (hoje - timedelta(days=30)).strftime("%Y-%m-%d")
+    )
+    data_fim = request.args.get(
+        "data_fim",
+        hoje.strftime("%Y-%m-%d")
+    )
+
+    return render_template(
+        "stv/bi/ranking_vendedores.html",
+        data_ini=data_ini,
+        data_fim=data_fim
+    )
+
+
 @bp.route("/stv/bi/vendido_por_dia")
 @login_required
 @requer_permissao("administrativo", "ver")
@@ -1140,10 +1163,10 @@ def stv_bi_vendido_por_dia():
 ###
 
 from datetime import date, timedelta
-@bp.route("/stv/bi/ranking_vendedores")
+@bp.route("/stv/bi/comissao_vendedores")
 @login_required
 @requer_permissao("venda", "ver")
-def stv_bi_ranking_vendedores():
+def stv_bi_comissao_vendedores():
 
     hoje = date.today()
 
@@ -1227,7 +1250,7 @@ def stv_bi_ranking_vendedores():
         })
 
     return render_template(
-        "stv/bi/ranking_vendedores.html",
+        "stv/bi/comissao_vendedores.html",
         vendedores=vendedores,
         data_ini=data_ini,
         data_fim=data_fim

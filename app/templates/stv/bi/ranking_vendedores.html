@@ -1,161 +1,161 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends "base_mobile.html" %}
+{% block content %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Ranking de Vendedores</title>
-    <br>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* 🔹 DARK STYLE (baseado no BI Streaming) */
+  .card-dark {
+    background: linear-gradient(145deg, #0b132b, #020617);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05);
+  }
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  .form-control {
+    background: #020617;
+    border: 1px solid rgba(255, 255, 255, .1);
+    color: #fff;
+  }
 
-    <style>
-        .btn-back {
-            display: inline-block;
-            margin: 18px 0 0 20px;
-            padding: 10px 14px;
-            background: #111827;
-            color: #22d3ee;
-            border: 1px solid #22d3ee;
-            border-radius: 10px;
-            transition: .2s;
-            font-weight: 700;
-            text-decoration: none;
-            /* REMOVE o sublinhado */
-        }
+  .form-control:focus {
+    background: #020617;
+    color: #fff;
+    border-color: #22d3ee;
+    box-shadow: none;
+  }
 
-        .btn-back:hover {
-            background: #22d3ee;
-            color: #0b0f14;
-        }
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 260px;
+    /* mobile first */
+  }
 
-        body {
-            background: radial-gradient(circle at top, #0d1b2a, #000814);
-            color: #fff;
-            font-family: Inter, system-ui, Arial, sans-serif;
-        }
+  @media (min-width: 768px) {
+    .chart-container {
+      height: 340px;
+    }
+  }
+</style>
 
-        .card-dark {
-            background: linear-gradient(145deg, #0b132b, #020617);
-            border-radius: 18px;
-            padding: 20px;
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05);
-        }
+<div class="container-fluid mt-3">
 
-        .rank-badge {
-            background: #22d3ee;
-            color: #000;
-            font-weight: 800;
-            border-radius: 50%;
-            width: 38px;
-            height: 38px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .table-dark th {
-            background: #020617;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="container-fluid p-4">
-
-        <h3 class="mb-4 fw-bold text-center">Ranking de Vendedores</h3>
-              <a href="{{ url_for('routes.home') }}"
-     class="btn btn-outline-info w-100 mt-3">
+  <h4 class="mb-3 fw-bold text-white">
+    Ranking de Vendedores
+  </h4>
+  <a href="{{ url_for('routes.home') }}" class="btn btn-outline-info w-100 mt-3">
     ← Voltar
   </a>
-<hr>
+  <hr>
+  <!-- 🔹 FILTRO -->
+  <form id="filtroForm" class="row g-2 mb-3">
 
-        <!-- 🔹 Filtros -->
-        <form class="row g-3 mb-4" method="GET">
-            <div class="col-md-3">
-                <label class="form-label">De</label>
-                <input type="date" name="data_ini" value="{{ data_ini or '' }}" class="form-control">
-            </div>
-
-            <div class="col-md-3">
-                <label class="form-label">Até</label>
-                <input type="date" name="data_fim" value="{{ data_fim or '' }}" class="form-control">
-            </div>
-
-            <div class="col-md-3 d-flex align-items-end">
-                <button class="btn btn-info w-100 fw-bold">
-                    Aplicar
-                </button>
-            </div>
-
-            <div class="col-md-3 d-flex align-items-end">
-                <a href="{{ url_for(
-  'routes.stv_relatorio_comissao_vendedores_pdf',
-  data_ini=data_ini,
-  data_fim=data_fim
-) }}" target="_blank" class="btn btn-danger w-100 fw-bold text-white">
-                    📄 Gerar PDF
-                </a>
-
-            </div>
-        </form>
-
-
-        {% for v in vendedores %}
-        <div class="card-dark mb-4">
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rank-badge">#{{ loop.index }}</div>
-                    <h5 class="mb-0">{{ v.vendedor }}</h5>
-                </div>
-                {% if v.tem_pendentes %}
-                <div class="alert alert-warning py-1 px-2 mt-2 mb-2">
-                    ⚠️ Possui vendas pendentes no período
-                </div>
-                {% endif %}
-
-
-                <div class="text-end">
-                    <div>Vendas realizadas: <strong>{{ v.qtd_vendas|br_numero }}</strong></div>
-                    <div>Comissão total: <strong>{{ ( v.total_comissao|br_moeda ) }}</strong></div>
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-dark table-hover table-sm mb-0">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Serviço</th>
-                            <th>Conta</th>
-                            <th>Venda</th>
-                            <th>Comissão</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for venda in v.vendas %}
-                        <tr>
-                            <td>{{ venda.data }}</td>
-                            <td>{{ venda.servico }}</td>
-                            <td>
-                                {{ venda.conta }}
-                            </td>
-
-                            <td>{{ venda.valor_venda }}</td>
-                            <td>{{ venda.valor_comissao }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-        {% endfor %}
-
+    <div class="col-6">
+      <input type="date" name="data_ini" id="data_ini" class="form-control" value="{{ data_ini }}">
     </div>
 
-</body>
+    <div class="col-6">
+      <input type="date" name="data_fim" id="data_fim" class="form-control" value="{{ data_fim }}">
+    </div>
 
-</html>
+    <div class="col-12">
+      <button class="btn btn-info w-100 fw-bold mt-2">
+        Filtrar
+      </button>
+    </div>
+
+  </form>
+
+  <!-- 🔹 GRÁFICO -->
+  <div class="card-dark">
+    <div class="chart-container">
+      <canvas id="graficoComissao"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  let chart;
+
+  async function carregarGrafico() {
+
+    const dataIni = document.getElementById("data_ini").value;
+    const dataFim = document.getElementById("data_fim").value;
+
+    const url = `/stv/bi/comissao_por_vendedor?data_ini=${dataIni}&data_fim=${dataFim}`;
+
+    const resp = await fetch(url);
+    const dados = await resp.json();
+
+    const labels = dados.map(d => d.vendedor);
+    const valores = dados.map(d => d.total);
+
+    const ctx = document.getElementById("graficoComissao");
+
+    if (chart) {
+      chart.destroy();
+    }
+
+    chart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          data: valores,
+          backgroundColor: "#22d3ee",
+          borderRadius: 8,
+          barThickness: 16,
+          maxBarThickness: 22
+        }]
+      },
+      options: {
+        indexAxis: 'y', // 👈 horizontal (MELHOR no mobile)
+        responsive: true,
+        maintainAspectRatio: false,
+
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: "#020617",
+            titleColor: "#fff",
+            bodyColor: "#e5e7eb",
+            padding: 10,
+            cornerRadius: 8,
+            callbacks: {
+              label: function (ctx) {
+                const v = dados[ctx.dataIndex].total_fmt;
+                return `R$ ${v}`;
+              }
+            }
+          }
+        },
+
+        scales: {
+          x: {
+            ticks: {
+              color: "#cbd5f5"
+            },
+            grid: {
+              color: "rgba(255,255,255,.06)"
+            }
+          },
+          y: {
+            ticks: {
+              color: "#e5e7eb",
+              font: { size: 12 }
+            },
+            grid: {
+              display: false
+            }
+          }
+        }
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", carregarGrafico);
+</script>
+
+{% endblock %}
