@@ -25,28 +25,57 @@
   <div class="card p-3 venda-item">
 
     <!-- CLIENTE (principal) -->
-    <div class="fw-bold fs-6 mb-1">
+<div class="d-flex align-items-center gap-3 mb-2">
+  <!-- Dados -->
+  <div class="flex-grow-1">
+    <div class="fw-semibold text-dark">
       {{ venda.cliente.nome }}
     </div>
+  </div>
+
+</div>
+
 
     <!-- SERVIÇO (badge) -->
-    <div class="mb-2">
-      <span class="badge bg-info text-dark">
-        {{ venda.servico.nome }}
-      </span>
+<div class="d-flex align-items-center gap-3 mb-2">
+
+  {% if venda.servico.imagem %}
+    <img
+      src="{{ url_for('static', filename=venda.servico.imagem) }}"
+      alt="{{ venda.servico.nome }}"
+      style="width:44px; height:44px; object-fit:cover; border-radius:10px;"
+    >
+  {% else %}
+    <div class="bg-secondary d-flex align-items-center justify-content-center"
+         style="width:44px; height:44px; border-radius:10px;">
+      <i class="fas fa-tv text-white"></i>
     </div>
+  {% endif %}
+
+  <div class="flex-grow-1">
+    <div class="fw-semibold text-dark">
+      {{ venda.servico.nome }}
+    </div>
+    <div class="small text-muted">
+      Serviço contratado
+    </div>
+  </div>
+
+</div>
+
+
 
     <!-- META INFORMAÇÕES -->
     <div class="d-flex flex-column gap-1 small text-muted">
 
       <div>
-        <i class="bi bi-person-circle me-1"></i>
+        <i class="fas fa-user-tie me-1"></i>
         <strong>Vendedor:</strong> {{ venda.vendedor.nome }}
       </div>
 
       <div>
         <i class="bi bi-calendar-event me-1"></i>
-        {{ venda.data_venda.strftime('%d/%m/%Y %H:%M') if venda.data_venda }}
+        {{ venda.data_venda|br_data_hora if venda.data_venda }}
       </div>
 
     </div>

@@ -396,3 +396,25 @@ input[type="search"] {
 .table td:last-child {
     border-right: none;
 }
+
+
+.td-texto-longo {
+  max-width: 220px;          /* limite da coluna */
+  word-break: break-all;     /* quebra email grande */
+  white-space: normal;
+  font-size: 13px;
+}
+
+.table td {
+  vertical-align: middle;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.acoes-cell {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-start; /* ou flex-start se preferir */
+  height: 100%;
+}

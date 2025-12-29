@@ -97,8 +97,11 @@
         <tr>
           <td>{{ v.data_venda|br_data_hora }}</td>
           <td>{{ v.vendedor.nome }}</td>
-          <td>{{ v.cliente.nome }}</td>
-          <td>{{ v.tela.conta.email if v.tela and v.tela.conta else '-' }}</td>
+          <td class="td-texto-longo">{{ v.cliente.nome }}</td>
+          <td class="td-texto-longo">
+            {{ v.tela.conta.email if v.tela and v.tela.conta else '-' }}
+          </td>
+
           <td>{{ v.servico.nome }}</td>
           <td>{{ v.tela.numero or '-' }}</td>
           <td>{{ v.valor_venda }}</td>
@@ -112,37 +115,41 @@
             {% else %}
             <span class="badge bg-secondary">Cancelada</span>
             {% endif %}
-            {% if v.status == 'ATIVA' %}
-            <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalWhatsapp"
-              data-telefone="{{ v.cliente.telefone }}" data-servico="{{ v.servico.nome }}"
-              data-email="{{ v.tela.conta.email }}" data-senha="{{ v.tela.conta.senha }}">
-              <i class="fab fa-whatsapp"></i>
-            </button>
-            {% endif %}
           </td>
 
-          <td class="d-flex gap-1">
-
-            {% if v.status == 'PENDENTE' %}
-            <a href="{{ url_for('routes.stv_finalizar_venda', venda_id=v.id) }}" class="btn btn-sm btn-success">
-              Finalizar
-            </a>
-            {% endif %}
-
-
-            {% if v.status != 'CANCELADA' %}
-            <form method="POST" action="{{ url_for('routes.stv_cancelar_venda', venda_id=v.id) }}"
-              onsubmit="return confirm('Deseja realmente cancelar esta venda e liberar a tela?');">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button class="btn btn-sm btn-warning">
-                Cancelar
+          <td>
+            <div class="acoes-cell">
+              {% if v.status == 'ATIVA' %}
+              <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalWhatsapp"
+                data-telefone="{{ v.cliente.telefone }}" data-servico="{{ v.servico.nome }}"
+                data-email="{{ v.tela.conta.email }}" data-senha="{{ v.tela.conta.senha }}" {% if
+                v.servico.nome|upper=='NETFLIX' and v.tela %} data-tela="{{ v.tela.numero }}" {% endif %}>
+                <i class="fab fa-whatsapp"></i>Reenviar
               </button>
-            </form>
-            {% else %}
-            <span class="text-muted">—</span>
-            {% endif %}
 
+              {% endif %}
+
+              {% if v.status == 'PENDENTE' %}
+              <a href="{{ url_for('routes.stv_finalizar_venda', venda_id=v.id) }}" class="btn btn-sm btn-success">
+                Finalizar
+              </a>
+              {% endif %}
+
+              {% if v.status != 'CANCELADA' %}
+              <form method="POST" action="{{ url_for('routes.stv_cancelar_venda', venda_id=v.id) }}"
+                onsubmit="return confirm('Deseja realmente cancelar esta venda e liberar a tela?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-sm btn-warning">
+                  Cancelar
+                </button>
+              </form>
+              {% else %}
+              <span class="text-muted">—</span>
+              {% endif %}
+
+            </div>
           </td>
+
         </tr>
         {% else %}
         <tr>
@@ -254,16 +261,23 @@
       const btn = event.relatedTarget;
 
       const telefone = (btn.dataset.telefone || "").replace(/\D/g, "");
-      const servico = btn.dataset.servico;
-      const email = btn.dataset.email;
-      const senha = btn.dataset.senha;
+      const servico = (btn.dataset.servico || "").toUpperCase();
+      const email = btn.dataset.email || "";
+      const senha = btn.dataset.senha || "";
+      const tela = btn.dataset.tela || "";
 
-      const msg = `*${servico.toUpperCase()}*
+      let msg = `*${servico}*
 
 👤 email: ${email}
 🔑 senha: ${senha}
+`;
 
-Agradecemos a preferência! ✅🍿`;
+      // 👇 SOMENTE NETFLIX
+      if (servico === "NETFLIX" && tela) {
+        msg += `➡️ tela: ${tela}\n`;
+      }
+
+      msg += `\nAgradecemos a preferência! ✅🍿`;
 
       const textarea = document.getElementById("msgWhatsapp");
       textarea.value = msg;
@@ -274,6 +288,7 @@ Agradecemos a preferência! ✅🍿`;
       }
     });
 </script>
+
 
 
 {% endblock %}

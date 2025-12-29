@@ -331,7 +331,9 @@
 
 👤 *Email:* {{ venda.tela.conta.email }}
 🔑 *Senha:* {{ venda.tela.conta.senha }}
-➡️ *Tela:* {{venda.tela.numero}}
+{% if servico.nome|upper == 'NETFLIX' %}
+➡️ *Tela:* {{ venda.tela.numero }}
+{% endif %}
 
 Agradecemos a preferência! ✅🍿
 </textarea>
