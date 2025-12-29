@@ -23,26 +23,48 @@ def formatar_numero(valor):
         return "0"
 
 from datetime import date, datetime
+from app.utils_datetime import utc_to_br
 
 def formatar_data(valor):
     """
-    Formata uma data ou datetime no padrão brasileiro (dd/mm/aaaa).
-    Se o valor for None ou inválido, retorna string vazia.
+    Formata datetime UTC para data BR (dd/mm/yyyy)
     """
     if not valor:
         return ""
+
     try:
-        if isinstance(valor, (date, datetime)):
+        if isinstance(valor, datetime):
+            valor = utc_to_br(valor)
             return valor.strftime("%d/%m/%Y")
-        # se vier como string ISO ("2025-10-27")
-        return datetime.fromisoformat(str(valor)).strftime("%d/%m/%Y")
-    except Exception:
+
+        if isinstance(valor, date):
+            return valor.strftime("%d/%m/%Y")
+
         return str(valor)
+
+    except Exception:
+        return ""
+
+def formatar_data_hora(valor):
+    """
+    Formata datetime UTC para data/hora BR
+    """
+    if not valor:
+        return ""
+
+    try:
+        valor = utc_to_br(valor)
+        return valor.strftime("%d/%m/%Y %H:%M")
+    except Exception:
+        return ""
+
 
 def registrar_filtros_jinja(app):
     app.jinja_env.filters['br_moeda'] = formatar_moeda
     app.jinja_env.filters['br_numero'] = formatar_numero
     app.jinja_env.filters['br_data'] = formatar_data
+    app.jinja_env.filters['br_data_hora'] = formatar_data_hora
+
 
 
 def requer_permissao(categoria, acao):

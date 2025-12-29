@@ -14,7 +14,7 @@ from app import csrf
 
 
 from app.routes import bp
-from app.utils_horas import hora_brasilia
+from app.utils_datetime import utc_now
 from app.utils_licenca import requer_licenca_ativa  # ← IMPORTA O MESMO BLUEPRINT DO routes.py
 from app.utils_uploads import salvar_upload
 
@@ -247,7 +247,7 @@ def stv_nova_conta():
             valor_venda_override=form.valor_venda_override.data,
             comissao_override=form.comissao_override.data,
             ativa=form.ativa.data,
-            criado_em=hora_brasilia()
+            criado_em=utc_now()
         )
 
         db.session.add(conta)
@@ -466,7 +466,7 @@ def stv_importar_contas():
                 valor_venda_override=valor_venda_override if not pd.isna(valor_venda_override) else None,
                 comissao_override=comissao_override if not pd.isna(comissao_override) else None,
                 ativa=ativo,
-                criado_em=hora_brasilia()
+                criado_em=utc_now()
             )
 
             db.session.add(conta)
@@ -793,7 +793,7 @@ def stv_vender_servico(servico_id):
             valor_venda=valor_venda,
             valor_comissao=valor_comissao,
             status="PENDENTE",
-            data_venda=hora_brasilia()
+            data_venda=utc_now()
         )
 
         if conta:
@@ -807,7 +807,7 @@ def stv_vender_servico(servico_id):
                 tela.vendida = True
                 venda.tela_id = tela.id
                 venda.status = "ATIVA"
-                venda.data_entrega = hora_brasilia()
+                venda.data_entrega = utc_now()
 
         db.session.add(venda)
         db.session.commit()
@@ -886,7 +886,7 @@ def stv_finalizar_venda(venda_id):
         tela.vendida = True
         venda.tela_id = tela.id
         venda.status = "ATIVA"
-        venda.data_entrega = hora_brasilia()
+        venda.data_entrega = utc_now()
 
         venda.valor_venda = (
             conta.valor_venda_override
@@ -955,8 +955,8 @@ def stv_cancelar_venda(venda_id):
 
 
 ##  helpers  ###
-
 from datetime import datetime, time
+from app.utils_datetime import br_to_utc
 
 def periodo_datetime(data_ini, data_fim):
     dt_ini = None
@@ -967,14 +967,17 @@ def periodo_datetime(data_ini, data_fim):
             datetime.strptime(data_ini, "%Y-%m-%d").date(),
             time.min
         )
+        dt_ini = br_to_utc(dt_ini)
 
     if data_fim:
         dt_fim = datetime.combine(
             datetime.strptime(data_fim, "%Y-%m-%d").date(),
             time.max
         )
+        dt_fim = br_to_utc(dt_fim)
 
     return dt_ini, dt_fim
+
 
 from datetime import date, timedelta
 

@@ -95,7 +95,7 @@
       <tbody>
         {% for v in vendas %}
         <tr>
-          <td>{{ v.data_venda.strftime('%d/%m/%Y %H:%M') }}</td>
+          <td>{{ v.data_venda|br_data_hora }}</td>
           <td>{{ v.vendedor.nome }}</td>
           <td>{{ v.cliente.nome }}</td>
           <td>{{ v.tela.conta.email if v.tela and v.tela.conta else '-' }}</td>

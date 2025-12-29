@@ -6,7 +6,7 @@ from decimal import Decimal, ROUND_HALF_UP, ROUND_CEILING
 from datetime import datetime
 from sqlalchemy.orm import backref
 from app.mixins import EmpresaQueryMixin
-from app.utils_horas import hora_brasilia
+from app.utils_datetime import utc_now
 
 from datetime import date, timedelta
 
@@ -23,7 +23,7 @@ class Empresa(db.Model):
     cnpj = db.Column(db.String(18), unique=True, nullable=True)
 
     ativa = db.Column(db.Boolean, default=True)
-    criada_em = db.Column(db.DateTime, default=hora_brasilia)
+    criada_em = db.Column(db.DateTime, default=utc_now)
 
 
 class Usuario(UserMixin, EmpresaQueryMixin,db.Model):
@@ -126,8 +126,7 @@ class LogAcao(EmpresaQueryMixin, db.Model):
 
     data_hora = db.Column(
         db.DateTime,
-        default=lambda: datetime.now().replace(microsecond=0)
-    )
+        default=utc_now)
 
     usuario = db.relationship("Usuario")
 
@@ -153,7 +152,7 @@ class LicencaSistema(EmpresaQueryMixin, db.Model):
 
     @property
     def dias_restantes(self):
-        hoje = hora_brasilia().date()
+        hoje = utc_now().date()
         return max((self.data_fim - hoje).days, 0)
 
     @property
@@ -178,7 +177,7 @@ class Cliente(EmpresaQueryMixin, db.Model):
     telefone = db.Column(db.String(20), nullable=False)
     nome = db.Column(db.String(120), nullable=True)
 
-    criado_em = db.Column(db.DateTime, default=hora_brasilia)
+    criado_em = db.Column(db.DateTime, default=utc_now)
 
     vendas = db.relationship(
         "VendaStreaming",
@@ -232,7 +231,7 @@ class Conta(EmpresaQueryMixin, db.Model):
     comissao_override = db.Column(db.Numeric(10, 2), nullable=True)
 
     ativa = db.Column(db.Boolean, default=True)
-    criado_em = db.Column(db.DateTime, default=hora_brasilia)
+    criado_em = db.Column(db.DateTime, default=utc_now)
 
     telas = db.relationship(
         "Tela",
@@ -256,6 +255,8 @@ class Tela(EmpresaQueryMixin, db.Model):
 
     numero = db.Column(db.Integer, nullable=False)
     vendida = db.Column(db.Boolean, default=False)
+
+
 
 class VendaStreaming(EmpresaQueryMixin, db.Model):
     __tablename__ = "venda_streaming"
@@ -285,6 +286,6 @@ class VendaStreaming(EmpresaQueryMixin, db.Model):
 
     status = db.Column(db.String(20), default="PENDENTE")
 
-    data_venda = db.Column(db.DateTime, default=hora_brasilia)
+    data_venda = db.Column(db.DateTime, default=utc_now)
     data_entrega = db.Column(db.DateTime, nullable=True)
 
