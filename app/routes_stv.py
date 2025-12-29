@@ -1103,13 +1103,18 @@ def stv_bi_vendido_por_dia():
     data_ini = request.args.get("data_ini")
     data_fim = request.args.get("data_fim")
 
-    dt_ini, dt_fim = periodo_datetime(data_ini, data_fim)
+    # 🔹 converte datas do filtro (BR) para date
+    dt_ini = datetime.strptime(data_ini, "%Y-%m-%d").date() if data_ini else None
+    dt_fim = datetime.strptime(data_fim, "%Y-%m-%d").date() if data_fim else None
+
+    # 🔹 define o "dia de negócio" (BR)
+    dia_br = func.date(
+        VendaStreaming.data_venda - text("interval '3 hours'")
+    )
 
     q = (
         db.session.query(
-            func.date(
-                func.timezone('America/Sao_Paulo', VendaStreaming.data_venda)
-            ).label("dia"),
+            dia_br.label("dia"),
             func.sum(VendaStreaming.valor_venda).label("total")
         )
         .filter(
@@ -1118,18 +1123,18 @@ def stv_bi_vendido_por_dia():
         )
     )
 
-
     if dt_ini:
-        q = q.filter(VendaStreaming.data_venda >= dt_ini)
+        q = q.filter(dia_br >= dt_ini)
     if dt_fim:
-        q = q.filter(VendaStreaming.data_venda <= dt_fim)
+        q = q.filter(dia_br <= dt_fim)
 
-    q = q.group_by(func.date(VendaStreaming.data_venda)).order_by("dia")
+    q = q.group_by(dia_br).order_by(dia_br)
 
     return jsonify([
         {"dia": formatar_data(d), "total": float(t or 0)}
         for d, t in q.all()
     ])
+
 
 
 ###
