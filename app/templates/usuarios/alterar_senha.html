@@ -1,22 +1,69 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-4">
-    <h3>Alterar Senha - {{ usuario.nome }}</h3>
-    <form method="POST">
+
+<div class="container mt-4" style="max-width: 520px;">
+
+<h3 class="mb-3 d-flex align-items-center gap-2">
+    Alterar Senha
+    <span class="badge rounded-pill"
+          style="background: #07b365; color: #e9f1f5;">
+        {{ usuario.nome }}
+    </span>
+</h3>
+
+
+    <!-- 🔐 Badge informativo -->
+    <div class="alert alert-info small">
+        <strong>Requisitos da senha:</strong>
+        <ul class="mb-0 ps-3">
+            <li>Mínimo de <strong>8 caracteres</strong></li>
+            <li>Pelo menos <strong>1 letra maiúscula</strong></li>
+            <li>Pelo menos <strong>1 letra minúscula</strong></li>
+            <li>Pelo menos <strong>1 número</strong></li>
+            {# <li>Pelo menos <strong>1 símbolo</strong></li> #}
+        </ul>
+    </div>
+
+    <form method="POST" novalidate>
         {{ form.hidden_tag() }}
 
         <div class="mb-3">
-            <label>Nova Senha</label>
+            <label class="form-label">Nova Senha</label>
             {{ form.nova_senha(class="form-control") }}
+
+            {% if form.nova_senha.errors %}
+            <div class="text-danger small mt-1">
+                {% for erro in form.nova_senha.errors %}
+                • {{ erro }}<br>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
 
         <div class="mb-3">
-            <label>Confirmar Senha</label>
+            <label class="form-label">Confirmar Senha</label>
             {{ form.confirmar_senha(class="form-control") }}
+
+            {% if form.confirmar_senha.errors %}
+            <div class="text-danger small mt-1">
+                {% for erro in form.confirmar_senha.errors %}
+                • {{ erro }}<br>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
 
-        <button type="submit" class="btn btn-success">Salvar</button>
-        <a href="{{ url_for('routes.listar_usuarios') }}" class="btn btn-secondary">Cancelar</a>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Salvar
+            </button>
+
+            <a href="{{ url_for('routes.listar_usuarios') }}" class="btn btn-outline-secondary">
+                Cancelar
+            </a>
+        </div>
     </form>
+
 </div>
+
 {% endblock %}

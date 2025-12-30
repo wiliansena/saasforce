@@ -1,38 +1,77 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Alterar Senha</h2>
+<div class="container mt-4" style="max-width: 520px;">
 
-    <form method="POST">
+    <h3 class="mb-3">
+        Alterar Senha
+    </h3>
+
+    <form method="POST" novalidate>
         {{ form.hidden_tag() }}
 
-        <div class="col-md-3">
-            <label for="senha_atual" class="form-label">Senha Atual</label>
-            {{ form.senha_atual(class="form-control") }}
+        <!-- 🔐 CARD DE REGRAS DA SENHA -->
+        <div class="alert alert-info small">
+            <strong>Requisitos da senha</strong>
+            <ul class="mb-0 mt-1">
+                <li>Mínimo de <strong>6 caracteres</strong></li>
+                <li>Pelo menos <strong>1 letra maiúscula</strong> (A–Z)</li>
+                <li>Pelo menos <strong>1 letra minúscula</strong> (a–z)</li>
+                <li>Pelo menos <strong>1 número</strong> (0–9)</li>
+                {# <li>1 símbolo (!@#$...)</li> #}
+            </ul>
         </div>
 
-        <div class="col-md-3">
-            <label for="nova_senha" class="form-label">Nova Senha</label>
+        <div class="mb-3">
+            <label class="form-label">Senha Atual</label>
+            {{ form.senha_atual(class="form-control") }}
+
+            {% if form.senha_atual.errors %}
+                <div class="text-danger small mt-1">
+                    {% for erro in form.senha_atual.errors %}
+                        • {{ erro }}<br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Nova Senha</label>
             {{ form.nova_senha(class="form-control") }}
-            <small class="text-muted">
-                A senha deve conter pelo menos:
-                <ul>
-                    <li>6 caracteres</li>
-                    <li>Uma letra maiúscula (A-Z)</li>
-                    <li>Uma letra minúscula (a-z)</li>
-                    <li>Um número (0-9)</li>
-               <!-- <li>Um símbolo (!@#$%^&*...)</li> -->
-                </ul>
-            </small>
+
+            {% if form.nova_senha.errors %}
+                <div class="text-danger small mt-1">
+                    {% for erro in form.nova_senha.errors %}
+                        • {{ erro }}<br>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
-        <div class="col-md-3">
-            <label for="confirmar_senha" class="form-label">Confirmar Nova Senha</label>
+
+        <div class="mb-3">
+            <label class="form-label">Confirmar Nova Senha</label>
             {{ form.confirmar_senha(class="form-control") }}
+
+            {% if form.confirmar_senha.errors %}
+                <div class="text-danger small mt-1">
+                    {% for erro in form.confirmar_senha.errors %}
+                        • {{ erro }}<br>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
-        <hr>
-        <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
-        <a href="{{ url_for('routes.home') }}" class="btn btn-secondary">Cancelar</a>
+
+        <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Salvar
+            </button>
+
+            <a href="{{ url_for('routes.home') }}"
+               class="btn btn-outline-secondary">
+                Cancelar
+            </a>
+        </div>
+
     </form>
 </div>
 {% endblock %}

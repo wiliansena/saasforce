@@ -182,7 +182,7 @@ from app.auth.forms import AdminAlterarSenhaForm
 @bp.route('/usuarios/alterar_senha/<int:id>', methods=['GET', 'POST'])
 @login_required
 @requer_licenca_ativa
-@requer_permissao('administracao', 'editar')
+@requer_permissao('usuarios', 'editar')
 def alterar_senha_usuario(id):
 
     usuario = (
@@ -210,6 +210,12 @@ def alterar_senha_usuario(id):
             "success"
         )
         return redirect(url_for('routes.listar_usuarios'))
+
+    # 👇 AQUI entra o feedback quando NÃO valida
+    elif form.is_submitted():
+        for campo, erros in form.errors.items():
+            for erro in erros:
+                flash(erro, "danger")
 
     return render_template(
         "usuarios/alterar_senha.html",
