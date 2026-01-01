@@ -136,6 +136,31 @@
   <header class="app-header">
     <h5>SaasFX</h5>
   </header>
+  <button id="btnInstall" style="display:none; position:fixed; bottom:20px; left:20px; right:20px;
+               padding:14px; font-size:16px; border-radius:14px;
+               background:#0d6efd; color:white; border:none;">
+    📲 Instalar SaasFX
+  </button>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("btnInstall");
+
+      if (window.deferredInstallPrompt && btn) {
+        btn.style.display = "block";
+      }
+
+      btn?.addEventListener("click", async () => {
+        if (!window.deferredInstallPrompt) return;
+
+        window.deferredInstallPrompt.prompt();
+        await window.deferredInstallPrompt.userChoice;
+
+        window.deferredInstallPrompt = null;
+        btn.style.display = "none";
+      });
+    });
+  </script>
+
 
   <!-- Conteúdo -->
   <div class="wrap">
