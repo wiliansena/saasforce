@@ -226,6 +226,16 @@
         </a>
       </div>
 
+      {% if current_user.is_master %}
+      <div class="grid-item">
+        <a href="{{ url_for('master.listar_empresas') }}" class="home-card">
+          <i class="fas fa-building"></i>
+          <span>EMPRESAS</span>
+        </a>
+      </div>
+      {% endif %}
+
+
       <!-- Logout sempre visível -->
       <div class="grid-item">
         <a href="{{ url_for('auth.logout') }}" class="home-card logout">
