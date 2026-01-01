@@ -13,6 +13,16 @@
     <!-- CSS do sistema -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/paginas3.css') }}">
 
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#0d6efd">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="SaasFX">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-icon-180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/static/images/apple-icon-167.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/static/images/apple-icon-152.png">
     <style>
         /* ======================================================
            LOGIN – PADRÃO VISUAL SAASFX
@@ -95,9 +105,7 @@
         <div class="login-card">
 
             <!-- Logo -->
-            <img src="{{ url_for('static', filename='images/logo.png') }}"
-                 alt="SaasFX"
-                 class="login-logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SaasFX" class="login-logo">
 
             <h2 class="login-title">SaasFX</h2>
             <div class="login-subtitle">Acesse sua conta</div>
@@ -141,6 +149,11 @@
 
         </div>
     </div>
-
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/static/service-worker.js");
+        }
+    </script>
 </body>
+
 </html>

@@ -19,8 +19,8 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
-    SESSION_COOKIE_SECURE = True
-    SESSION_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "true").lower() == "true"
+    SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE", "Lax")
 
 
     # ==========================

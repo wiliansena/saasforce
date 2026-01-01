@@ -1,5 +1,14 @@
-// Apenas para registrar como PWA — sem funcionalidades extras
-self.addEventListener("fetch", function(event) {
-    // Deixa passar tudo normalmente
-  });
-  
+self.addEventListener("install", () => {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", event => {
+  event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener("fetch", event => {
+  // Não interfere em POST (login / CSRF)
+  if (event.request.method !== "GET") {
+    return;
+  }
+});
