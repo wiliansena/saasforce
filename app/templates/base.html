@@ -50,6 +50,11 @@
 
 <body class="layout-saasfx">
 
+    <button id="btnInstall" style="display:none; position:fixed; bottom:20px; left:20px; right:20px;
+               padding:14px; font-size:16px; border-radius:14px;
+               background:#0d6efd; color:white; border:none;">
+        📲 Instalar SaasFX
+    </button>
 
     <!-- Botão de alternância da sidebar -->
     <button id="toggleSidebar" class="toggle-sidebar-btn no-print" title="Abrir/Fechar Menu">
@@ -57,26 +62,29 @@
     </button>
 
     <!-- Barra superior -->
-<div class="top-bar">
-    <div class="system-title">PAINEL DE CONTROLE</div>
+    <div class="top-bar">
+        <div class="system-title">PAINEL DE CONTROLE</div>
 
-    <div class="user-info">
-        <div class="empresa-nome">
-            {{ (current_user.empresa.nome if current_user.empresa and current_user.empresa.nome else "MASTER") | upper }}
-        </div>
-        <div class="usuario-nome">
-            Olá, {{ current_user.nome | upper}}
+
+        <div class="user-info">
+            <div class="empresa-nome">
+                {{ (current_user.empresa.nome if current_user.empresa and current_user.empresa.nome else "MASTER") |
+                upper }}
+            </div>
+            <div class="usuario-nome">
+                Olá, {{ current_user.nome | upper}}
+            </div>
         </div>
     </div>
-</div>
 
 
     <!-- Menu lateral (visível apenas para usuários autenticados) -->
     {% if current_user.is_authenticated %}
     <nav class="sidebar">
         <div class="text-center">
-            <h4> {{ (current_user.empresa.nome if current_user.empresa and current_user.empresa.nome else "MASTER") | upper }}
-</h4>
+            <h4> {{ (current_user.empresa.nome if current_user.empresa and current_user.empresa.nome else "MASTER") |
+                upper }}
+            </h4>
         </div>
 
         <a href="{{ url_for('routes.home') }}"><i class="fas fa-home"></i> Página Inicial</a>
@@ -93,11 +101,11 @@
                 Vendas</a>
             <a href="{{ url_for('routes.stv_vendas_servicos') }}"><i class="fas fa-plus"></i>
                 Nova venda</a>
-            
+
             <a href="{{ url_for('routes.stv_bi_ranking_vendedores') }}"><i class="fas fa-trophy"></i>
                 Ranking vendedores</a>
 
-                
+
             <a href="{{ url_for('routes.stv_bi_comissao_vendedores') }}"><i class="fas fa-coins"></i>
                 Comissões vendedores</a>
 
@@ -352,6 +360,28 @@
             });
         });
     </script>
+    <script>
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            const btn = document.getElementById('btnInstall');
+            if (btn) btn.style.display = 'block';
+        });
+
+        document.getElementById('btnInstall')?.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+
+            deferredPrompt.prompt();
+            const choice = await deferredPrompt.userChoice;
+
+            deferredPrompt = null;
+            document.getElementById('btnInstall').style.display = 'none';
+        });
+    </script>
+
 </body>
 
 
