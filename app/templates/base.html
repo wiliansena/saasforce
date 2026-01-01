@@ -50,12 +50,6 @@
 
 <body class="layout-saasfx">
 
-    <button id="btnInstall" style="display:none; position:fixed; bottom:20px; left:20px; right:20px;
-               padding:14px; font-size:16px; border-radius:14px;
-               background:#0d6efd; color:white; border:none;">
-        📲 Instalar SaasFX
-    </button>
-
     <!-- Botão de alternância da sidebar -->
     <button id="toggleSidebar" class="toggle-sidebar-btn no-print" title="Abrir/Fechar Menu">
         <i id="toggleIcon" class="fa-solid fa-angles-left"></i>
@@ -360,28 +354,6 @@
             });
         });
     </script>
-    <script>
-        let deferredPrompt;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-
-            const btn = document.getElementById('btnInstall');
-            if (btn) btn.style.display = 'block';
-        });
-
-        document.getElementById('btnInstall')?.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-
-            deferredPrompt.prompt();
-            const choice = await deferredPrompt.userChoice;
-
-            deferredPrompt = null;
-            document.getElementById('btnInstall').style.display = 'none';
-        });
-    </script>
-
 </body>
 
 
