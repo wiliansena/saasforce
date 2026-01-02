@@ -100,8 +100,7 @@
             <a href="{{ url_for(
             'routes.stv_relatorio_comissao_vendedores_pdf',
             data_ini=data_ini,
-            data_fim=data_fim,
-            _=current_user.empresa_id ~ '-' ~ now().timestamp()
+            data_fim=data_fim
             ) }}" target="_blank">
             Gerar PDF
             </a>
