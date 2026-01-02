@@ -508,6 +508,9 @@ def stv_importar_contas():
 ### VENDAS STV
 ### ===============================
 
+from datetime import datetime
+from sqlalchemy import func, text
+
 @bp.route("/stv/vendas/listar")
 @login_required
 @requer_licenca_ativa
@@ -523,29 +526,45 @@ def stv_listar_vendas():
     vendedor_id = request.args.get("vendedor_id")
     busca = request.args.get("busca", "").strip()
 
+    # 🔹 converte filtros para DATE
+    d_ini = (
+        datetime.strptime(data_ini, "%Y-%m-%d").date()
+        if data_ini else None
+    )
+    d_fim = (
+        datetime.strptime(data_fim, "%Y-%m-%d").date()
+        if data_fim else None
+    )
+
+    # 🔹 data de negócio (BR)
+    data_br = func.date(
+        VendaStreaming.data_venda - text("interval '3 hours'")
+    )
+
     q = (
         VendaStreaming.query_empresa()
         .join(Usuario, Usuario.id == VendaStreaming.vendedor_id)
-        .join(Cliente, Cliente.id == VendaStreaming.cliente_id)  # 👈 ESSENCIAL
+        .join(Cliente, Cliente.id == VendaStreaming.cliente_id)
         .outerjoin(Tela, Tela.id == VendaStreaming.tela_id)
         .outerjoin(Conta, Conta.id == Tela.conta_id)
         .join(Servico, Servico.id == VendaStreaming.servico_id)
     )
 
-    # 🔹 filtros existentes
+    # 🔹 filtros
     if status:
         q = q.filter(VendaStreaming.status == status)
 
     if vendedor_id:
         q = q.filter(VendaStreaming.vendedor_id == vendedor_id)
 
-    if data_ini:
-        q = q.filter(VendaStreaming.data_venda >= data_ini)
+    # ✅ FILTRO DE DATA CORRETO
+    if d_ini:
+        q = q.filter(data_br >= d_ini)
 
-    if data_fim:
-        q = q.filter(VendaStreaming.data_venda <= data_fim)
+    if d_fim:
+        q = q.filter(data_br <= d_fim)
 
-    # 🔥 BUSCA GLOBAL NO BANCO
+    # 🔥 BUSCA GLOBAL
     if busca:
         b = f"%{busca}%"
         q = q.filter(
@@ -579,7 +598,7 @@ def stv_listar_vendas():
         status=status,
         vendedor_id=vendedor_id,
         busca=busca
-	)    
+    )
 
 
 
@@ -1210,7 +1229,7 @@ def stv_bi_comissao_vendedores():
     vendedores = []
 
     for r in ranking:
-        vendas = (
+        vendas_q = (
             db.session.query(
                 VendaStreaming.data_venda,
                 Servico.nome.label("servico"),
@@ -1227,9 +1246,15 @@ def stv_bi_comissao_vendedores():
                 VendaStreaming.empresa_id == current_user.empresa_id,
                 VendaStreaming.status.in_(["ATIVA", "PENDENTE"])
             )
-            .order_by(VendaStreaming.data_venda.desc())
-            .all()
         )
+
+        if dt_ini:
+            vendas_q = vendas_q.filter(VendaStreaming.data_venda >= dt_ini)
+        if dt_fim:
+            vendas_q = vendas_q.filter(VendaStreaming.data_venda <= dt_fim)
+
+        vendas = vendas_q.order_by(VendaStreaming.data_venda.desc()).all()
+
 
         vendedores.append({
             "vendedor": r.vendedor,
