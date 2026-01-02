@@ -27,23 +27,34 @@ from app.utils_datetime import utc_to_br
 
 def formatar_data(valor):
     """
-    Formata datetime UTC para data BR (dd/mm/yyyy)
+    Formata date, datetime ou string ISO (YYYY-MM-DD) para data BR (dd/mm/yyyy)
     """
     if not valor:
         return ""
 
     try:
+        # datetime
         if isinstance(valor, datetime):
             valor = utc_to_br(valor)
             return valor.strftime("%d/%m/%Y")
 
+        # date
         if isinstance(valor, date):
             return valor.strftime("%d/%m/%Y")
+
+        # string YYYY-MM-DD
+        if isinstance(valor, str):
+            try:
+                valor = datetime.strptime(valor, "%Y-%m-%d").date()
+                return valor.strftime("%d/%m/%Y")
+            except ValueError:
+                return valor  # se não for data, devolve como veio
 
         return str(valor)
 
     except Exception:
         return ""
+
 
 def formatar_data_hora(valor):
     """

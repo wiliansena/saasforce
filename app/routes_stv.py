@@ -1381,11 +1381,33 @@ def stv_relatorio_comissao_vendedores_pdf():
 
     response = make_response(pdf)
     response.headers["Content-Type"] = "application/pdf"
-    response.headers["Content-Disposition"] = (
-        f"inline; filename=comissao_vendedores_{data_ini}_a_{data_fim}.pdf"
+
+    # --------------------------------------------------
+    # 📱 MOBILE / PWA → FORÇA DOWNLOAD
+    # 🖥 DESKTOP → INLINE
+    # --------------------------------------------------
+    user_agent = request.headers.get("User-Agent", "").lower()
+
+    is_mobile = any(
+        k in user_agent
+        for k in ["android", "iphone", "ipad", "mobile"]
     )
 
+    disposition = "attachment" if is_mobile else "inline"
+
+    response.headers["Content-Disposition"] = (
+        f'{disposition}; filename="comissao_vendedores_{data_ini}_a_{data_fim}.pdf"'
+    )
+
+    # --------------------------------------------------
+    # 🔥 BLOQUEIO TOTAL DE CACHE
+    # --------------------------------------------------
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+
     return response
+
 
 
 
@@ -1476,8 +1498,10 @@ def stv_relatorio_vendas_pdf():
         v.valor_comissao or 0 for v in vendas if v.status == "CANCELADA"
     )
 
-    total_vendas_geral = sum(v.valor_venda or 0 for v in vendas)
-    total_comissao_geral = sum(v.valor_comissao or 0 for v in vendas)
+    # ✅ TOTAL GERAL (SEM CANCELADAS)
+    total_vendas_geral = total_vendas + total_vendas_pendente
+    total_comissao_geral = total_comissao + total_comissao_pendente
+
 
     html = render_template(
         "stv/relatorios/vendas_pdf.html",

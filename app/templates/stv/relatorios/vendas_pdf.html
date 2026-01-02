@@ -29,51 +29,68 @@
             <th>Status</th>
         </tr>
     </thead>
+
     <tbody>
         {% for v in vendas %}
         <tr>
-            <td>{{ (v.data_venda|br_data) }}</td>
+            <td>{{ v.data_venda|br_data }}</td>
             <td>{{ v.vendedor }}</td>
             <td>{{ v.cliente }}</td>
             <td>{{ v.servico }}</td>
             <td>{{ v.tela or '-' }}</td>
-            <td>{{ (v.valor_venda|br_moeda) }}</td>
-            <td>{{ (v.valor_comissao|br_moeda) }}</td>
+            <td>{{ v.valor_venda|br_moeda }}</td>
+            <td>{{ v.valor_comissao|br_moeda }}</td>
             <td>{{ v.status }}</td>
         </tr>
         {% endfor %}
     </tbody>
-
-    <tfoot>
-        <tr>
-            <th colspan="5">TOTAIS (Ativas, pendentes, canceladas)</th>
-            <th>{{ (total_vendas_geral|br_moeda) }}</th>
-            <th>{{ (total_comissao_geral|br_moeda) }}</th>
-        </tr>
-    </tfoot>
-    <tfoot>
-            <tfoot>
-        <tr>
-            <th colspan="5">TOTAIS (CANCELADAS)</th>
-            <th>{{ (total_vendas_cancelada|br_moeda) }}</th>
-            <th>{{ (total_comissao_cancelada|br_moeda) }}</th>
-        </tr>
-    </tfoot>
-            <tfoot>
-        <tr>
-            <th colspan="5">TOTAIS (PENDENTE)</th>
-            <th>{{ (total_vendas_pendente|br_moeda) }}</th>
-            <th>{{ (total_comissao_pendente|br_moeda) }}</th>
-        </tr>
-    </tfoot>
-        <tr>
-            <th colspan="5">TOTAIS (ATIVAS)</th>
-            <th>{{ (total_vendas|br_moeda) }}</th>
-            <th>{{ (total_comissao|br_moeda) }}</th>
-        </tr>
-    </tfoot>
-
-
 </table>
+
+<!-- QUEBRA DE PÁGINA -->
+<div style="page-break-inside: avoid;"></div>
+
+<h3>Totais do Período</h3>
+<div style="margin-top:6px; page-break-inside: avoid;">
+    <table>
+        <thead>
+            <tr>
+                <th colspan="5"></th>
+                <th>Valor total</th>
+                <th>Comissão total</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <th colspan="5">TOTAIS (Ativas + Pendentes)</th>
+                <td>{{ total_vendas_geral|br_moeda }}</td>
+                <td>{{ total_comissao_geral|br_moeda }}</td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <th colspan="5">TOTAIS (ATIVAS)</th>
+                <td>{{ total_vendas|br_moeda }}</td>
+                <td>{{ total_comissao|br_moeda }}</td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <th colspan="5">TOTAIS (PENDENTES)</th>
+                <td>{{ total_vendas_pendente|br_moeda }}</td>
+                <td>{{ total_comissao_pendente|br_moeda }}</td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <th colspan="5">TOTAIS (CANCELADAS)</th>
+                <td>{{ total_vendas_cancelada|br_moeda }}</td>
+                <td>{{ total_comissao_cancelada|br_moeda }}</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}

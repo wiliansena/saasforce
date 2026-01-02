@@ -98,11 +98,12 @@
 
         <div class="col-md-3 d-flex align-items-end">
             <a href="{{ url_for(
-                'routes.stv_relatorio_comissao_vendedores_pdf',
-                data_ini=data_ini,
-                data_fim=data_fim
-            ) }}" target="_blank" class="btn btn-danger w-100 fw-bold text-white">
-                📄 Gerar PDF
+            'routes.stv_relatorio_comissao_vendedores_pdf',
+            data_ini=data_ini,
+            data_fim=data_fim,
+            _=current_user.empresa_id ~ '-' ~ now().timestamp()
+            ) }}" target="_blank">
+            Gerar PDF
             </a>
         </div>
     </form>
