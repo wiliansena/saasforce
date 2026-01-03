@@ -1023,6 +1023,7 @@ def stv_bi_dashboard():
         data_fim=data_fim
     )
 
+
 @bp.route("/stv/bi/kpis")
 @login_required
 @requer_permissao("administrativo", "ver")
@@ -1033,56 +1034,36 @@ def stv_bi_kpis():
 
     dt_ini, dt_fim = periodo_datetime(data_ini, data_fim)
 
-    # -------------------------------------------------
-    # VENDAS (ATIVA + PENDENTE)
-    # -------------------------------------------------
-    q_vendas = (
+    q = (
         VendaStreaming.query_empresa()
         .filter(VendaStreaming.status.in_(["ATIVA", "PENDENTE"]))
     )
 
     if dt_ini:
-        q_vendas = q_vendas.filter(VendaStreaming.data_venda >= dt_ini)
+        q = q.filter(VendaStreaming.data_venda >= dt_ini)
     if dt_fim:
-        q_vendas = q_vendas.filter(VendaStreaming.data_venda <= dt_fim)
+        q = q.filter(VendaStreaming.data_venda <= dt_fim)
 
-    total_vendido = (
-        q_vendas.with_entities(
-            func.coalesce(func.sum(VendaStreaming.valor_venda), 0)
-        ).scalar()
-    )
+    total_vendido = q.with_entities(
+        func.coalesce(func.sum(VendaStreaming.valor_venda), 0)
+    ).scalar()
 
-    total_comissao = (
-        q_vendas.with_entities(
-            func.coalesce(func.sum(VendaStreaming.valor_comissao), 0)
-        ).scalar()
-    )
+    total_comissao = q.with_entities(
+        func.coalesce(func.sum(VendaStreaming.valor_comissao), 0)
+    ).scalar()
 
-    # -------------------------------------------------
-    # INVESTIMENTO = valor_investido * qtd contas
-    # -------------------------------------------------
-    investimento_por_servico = (
+    # 🔹 investimento SOMENTE da empresa
+    total_investido = (
         db.session.query(
-            Servico.valor_investido,
-            func.count(Conta.id).label("qtd_contas")
+            func.coalesce(func.sum(Servico.valor_investido), 0)
         )
-        .join(Conta, Conta.servico_id == Servico.id)
         .filter(
             Servico.empresa_id == current_user.empresa_id,
             Servico.ativo == True
         )
-        .group_by(Servico.id, Servico.valor_investido)
-        .all()
+        .scalar()
     )
 
-    total_investido = sum(
-        (valor or 0) * qtd
-        for valor, qtd in investimento_por_servico
-    )
-
-    # -------------------------------------------------
-    # LUCRO
-    # -------------------------------------------------
     lucro = total_vendido - total_comissao - total_investido
 
     return jsonify({
