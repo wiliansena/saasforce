@@ -39,7 +39,7 @@ class ServicoForm(FlaskForm):
             ("individual", "Individual"),
         ],validators=[DataRequired()])
     telas_total = IntegerField("Total de Telas", validators=[Optional(), NumberRange(min=1)])
-    valor_investido = DecimalField("Valor Investido", places=2, validators=[InputRequired()])
+    valor_investido = DecimalField("Valor Investido (Por conta)", places=2, validators=[InputRequired()])
     valor_venda_padrao = DecimalField("Valor Venda Padrão", places=2, validators=[InputRequired()])
     comissao_padrao = DecimalField("Comissão padrão", places=2, validators=[InputRequired()])
     ativo = BooleanField("Ativo")
