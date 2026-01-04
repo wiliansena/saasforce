@@ -57,7 +57,7 @@
           <td>{{ c.email }}</td>
           <td>{{ c.senha }}</td>
           <td>{{ c.servico.nome }}</td>
-          <td>R$ {{ c.valor_investido|br_numero }}</td>
+          <td>R$ {{ c.valor_investido|br_moeda }}</td>
 
           <td>
             {% if c.valor_venda_override %}
