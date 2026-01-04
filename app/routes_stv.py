@@ -79,7 +79,6 @@ def stv_novo_servico():
             nome=form.nome.data,
             tipo=form.tipo.data,
             telas_total=form.telas_total.data,
-            valor_investido=form.valor_investido.data,
             valor_venda_padrao=form.valor_venda_padrao.data,
             comissao_padrao=form.comissao_padrao.data,
             ativo=form.ativo.data,
@@ -125,7 +124,6 @@ def stv_editar_servico(id):
         servico.nome = form.nome.data
         servico.tipo = form.tipo.data
         servico.telas_total = form.telas_total.data
-        servico.valor_investido = form.valor_investido.data
         servico.valor_venda_padrao = form.valor_venda_padrao.data
         servico.comissao_padrao = form.comissao_padrao.data
         servico.ativo = form.ativo.data
@@ -244,6 +242,7 @@ def stv_nova_conta():
             email=form.email.data,
             senha=form.senha.data,
             servico_id=form.servico_id.data,
+            valor_investido=form.valor_investido.data,
             valor_venda_override=form.valor_venda_override.data,
             comissao_override=form.comissao_override.data,
             ativa=form.ativa.data,
@@ -304,6 +303,7 @@ def stv_editar_conta(id):
         conta.email = form.email.data
         conta.senha = form.senha.data
         conta.servico_id = form.servico_id.data
+        conta.valor_investido = form.valor_investido.data
         conta.valor_venda_override = form.valor_venda_override.data
         conta.comissao_override = form.comissao_override.data
         conta.ativa = form.ativa.data
@@ -374,6 +374,7 @@ def stv_baixar_modelo_contas():
         "senha",
         "servico",
         "ativo",
+        "valor_investido",
         "valor_venda_override",
         "comissao_override"
     ])
@@ -412,7 +413,7 @@ def stv_importar_contas():
             flash("Arquivo inválido.", "danger")
             return redirect(request.url)
 
-        obrigatorias = ["email", "servico"]
+        obrigatorias = ["email", "senha", "servico","valor_investido"]
         for col in obrigatorias:
             if col not in df.columns:
                 flash(f"Coluna obrigatória ausente: {col}", "danger")
@@ -430,12 +431,25 @@ def stv_importar_contas():
             nome_servico = str(row.get("servico")).strip()
             ativo = str(row.get("ativo", "SIM")).upper() == "SIM"
 
+            valor_investido = row.get("valor_investido")
             valor_venda_override = row.get("valor_venda_override")
             comissao_override = row.get("comissao_override")
 
             if not email or not nome_servico:
                 ignoradas += 1
                 continue
+
+            # 🔒 valor_investido é obrigatório
+            if pd.isna(valor_investido):
+                ignoradas += 1
+                continue
+
+            try:
+                valor_investido = float(valor_investido)
+            except (ValueError, TypeError):
+                ignoradas += 1
+                continue
+
 
             servico = (
                 Servico.query_empresa()
@@ -463,6 +477,7 @@ def stv_importar_contas():
                 email=email,
                 senha=senha,
                 servico_id=servico.id,
+                valor_investido=valor_investido,
                 valor_venda_override=valor_venda_override if not pd.isna(valor_venda_override) else None,
                 comissao_override=comissao_override if not pd.isna(comissao_override) else None,
                 ativa=ativo,
@@ -1055,11 +1070,11 @@ def stv_bi_kpis():
     # 🔹 investimento SOMENTE da empresa
     total_investido = (
         db.session.query(
-            func.coalesce(func.sum(Servico.valor_investido), 0)
+            func.coalesce(func.sum(Conta.valor_investido), 0)
         )
         .filter(
-            Servico.empresa_id == current_user.empresa_id,
-            Servico.ativo == True
+            Conta.empresa_id == current_user.empresa_id,
+            Conta.ativa == True
         )
         .scalar()
     )

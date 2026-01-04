@@ -203,8 +203,6 @@ class Servico(EmpresaQueryMixin, db.Model):
     # compartilhado | individual
 
     telas_total = db.Column(db.Integer)
-
-    valor_investido = db.Column(db.Numeric(10, 2), nullable=False)
     valor_venda_padrao = db.Column(db.Numeric(10, 2), nullable=False)
     comissao_padrao = db.Column(db.Numeric(10, 2), nullable=False)
 
@@ -229,6 +227,7 @@ class Conta(EmpresaQueryMixin, db.Model):
 
     valor_venda_override = db.Column(db.Numeric(10, 2), nullable=True)
     comissao_override = db.Column(db.Numeric(10, 2), nullable=True)
+    valor_investido = db.Column(db.Numeric(10, 4), nullable=True)
 
     ativa = db.Column(db.Boolean, default=True)
     criado_em = db.Column(db.DateTime, default=utc_now)

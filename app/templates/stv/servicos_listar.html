@@ -38,7 +38,6 @@
           <th>Imagem</th>
           <th>Tipo</th>
           <th>Telas</th>
-          <th>Investido</th>
           <th>Valor venda</th>
           <th>Comissão</th>
           <th>Status</th>
@@ -65,7 +64,6 @@
 
           <td>{{ s.tipo|capitalize }}</td>
           <td>{{ s.telas_total }}</td>
-          <td>R$ {{ "%.2f"|format(s.valor_investido) }}</td>
           <td>R$ {{ "%.2f"|format(s.valor_venda_padrao) }}</td>
           <td>R$ {{ "%.2f"|format(s.comissao_padrao) }}</td>
 

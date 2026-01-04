@@ -39,7 +39,6 @@ class ServicoForm(FlaskForm):
             ("individual", "Individual"),
         ],validators=[DataRequired()])
     telas_total = IntegerField("Total de Telas", validators=[Optional(), NumberRange(min=1)])
-    valor_investido = DecimalField("Valor Investido", places=2, validators=[InputRequired()])
     valor_venda_padrao = DecimalField("Valor Venda Padrão", places=2, validators=[InputRequired()])
     comissao_padrao = DecimalField("Comissão padrão", places=2, validators=[InputRequired()])
     ativo = BooleanField("Ativo")
@@ -51,6 +50,7 @@ class ContaForm(FlaskForm):
     servico_id = SelectField("Serviço", coerce=int, validators=[DataRequired()])
     valor_venda_override = DecimalField("Venda personalizada (Opcional)", places=2, validators=[Optional()])
     comissao_override = DecimalField("Comissão personalizada (Opcional)", places=2, validators=[Optional()])
+    valor_investido = DecimalField("Valor Investido", places=4, validators=[InputRequired()])
     ativa = BooleanField("Conta Ativa")
 
 class VendaStreamingForm(FlaskForm):

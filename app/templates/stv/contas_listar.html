@@ -43,7 +43,8 @@
           <th>Email</th>
           <th>Senha</th>
           <th>Serviço</th>
-          <th>Valor Venda</th>
+          <th>Valor<br> investido</th>
+          <th>Valor<br> Venda</th>
           <th>Comissão</th>
           <th>Status</th>
           <th width="180">Ações</th>
@@ -56,6 +57,7 @@
           <td>{{ c.email }}</td>
           <td>{{ c.senha }}</td>
           <td>{{ c.servico.nome }}</td>
+          <td>R$ {{ c.valor_investido|br_numero }}</td>
 
           <td>
             {% if c.valor_venda_override %}
