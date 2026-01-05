@@ -64,8 +64,8 @@
 
           <td>{{ s.tipo|capitalize }}</td>
           <td>{{ s.telas_total }}</td>
-          <td>R$ {{ "%.2f"|format(s.valor_venda_padrao) }}</td>
-          <td>R$ {{ "%.2f"|format(s.comissao_padrao) }}</td>
+          <td>R$ {{ s.valor_venda_padrao|br_moeda }}</td>
+          <td>R$ {{ s.comissao_padrao|br_moeda  }}</td>
 
           <td>
             {% if s.ativo %}

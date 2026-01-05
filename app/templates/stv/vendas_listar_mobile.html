@@ -75,9 +75,9 @@
       <!-- Valores + Status -->
       <div class="d-flex justify-content-between align-items-center mt-2">
         <div>
-          <strong>R$ {{ v.valor_venda }}</strong>
+          <strong>R$ {{ v.valor_venda|br_moeda  }}</strong>
           <div class="small text-muted">
-            Comissão: R$ {{ v.valor_comissao }}
+            Comissão: R$ {{ v.valor_comissao|br_moeda  }}
           </div>
         </div>
 

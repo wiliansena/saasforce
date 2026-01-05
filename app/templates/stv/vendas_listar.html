@@ -104,8 +104,8 @@
 
           <td>{{ v.servico.nome }}</td>
           <td>{{ v.tela.numero or '-' }}</td>
-          <td>{{ v.valor_venda }}</td>
-          <td>{{ v.valor_comissao }}</td>
+          <td>R$ {{ v.valor_venda|br_moeda  }}</td>
+          <td>R$ {{ v.valor_comissao|br_moeda  }}</td>
 
           <td>
             {% if v.status == 'ATIVA' %}

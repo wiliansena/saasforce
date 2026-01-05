@@ -61,17 +61,17 @@
 
           <td>
             {% if c.valor_venda_override %}
-              R$ {{ "%.2f"|format(c.valor_venda_override) }}
+              R$ {{ c.valor_venda_override|br_moeda }}
             {% else %}
-              R$ {{ "%.2f"|format(c.servico.valor_venda_padrao) }}
+              R$ {{ c.servico.valor_venda_padrao|br_moeda }}
             {% endif %}
           </td>
 
           <td>
             {% if c.comissao_override %}
-              R$ {{ "%.2f"|format(c.comissao_override) }}
+              R$ {{ c.comissao_override|br_moeda }}
             {% else %}
-              R$ {{ "%.2f"|format(c.servico.comissao_padrao) }}
+              R$ {{ c.servico.comissao_padrao|br_moeda }}
             {% endif %}
           </td>
 
