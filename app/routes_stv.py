@@ -1058,7 +1058,7 @@ def stv_bi_kpis():
         q = q.filter(VendaStreaming.data_venda >= dt_ini)
     if dt_fim:
         q = q.filter(VendaStreaming.data_venda <= dt_fim)
-
+    
     total_vendido = q.with_entities(
         func.coalesce(func.sum(VendaStreaming.valor_venda), 0)
     ).scalar()
@@ -1067,8 +1067,8 @@ def stv_bi_kpis():
         func.coalesce(func.sum(VendaStreaming.valor_comissao), 0)
     ).scalar()
 
-    # 🔹 investimento SOMENTE da empresa
-    total_investido = (
+    # 🔹 TOTAL INVESTIDO TMB NO PERIODO POR CONTA DA EMPRESA
+    q_invest = (
         db.session.query(
             func.coalesce(func.sum(Conta.valor_investido), 0)
         )
@@ -1076,8 +1076,16 @@ def stv_bi_kpis():
             Conta.empresa_id == current_user.empresa_id,
             Conta.ativa == True
         )
-        .scalar()
     )
+
+    if dt_ini:
+        q_invest = q_invest.filter(Conta.criado_em >= dt_ini)
+
+    if dt_fim:
+        q_invest = q_invest.filter(Conta.criado_em <= dt_fim)
+
+    total_investido = q_invest.scalar()
+
 
     lucro = total_vendido - total_comissao - total_investido
 
