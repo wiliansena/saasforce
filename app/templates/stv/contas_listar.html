@@ -40,6 +40,7 @@
     <table class="table table-bordered table-striped table-hover align-middle">
       <thead class="table-dark">
         <tr>
+          <th>Data</th>
           <th>Email</th>
           <th>Senha</th>
           <th>Serviço</th>
@@ -54,6 +55,7 @@
       <tbody>
         {% for c in contas %}
         <tr>
+          <td>{{ c.criado_em|br_data_hora }}</td>
           <td>{{ c.email }}</td>
           <td>{{ c.senha }}</td>
           <td>{{ c.servico.nome }}</td>
