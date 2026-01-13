@@ -270,6 +270,8 @@ class VendaStreaming(EmpresaQueryMixin, db.Model):
         db.ForeignKey("empresa.id"),
         nullable=False
     )
+    
+    empresa = db.relationship("Empresa")  # 👈 RELACIONAMENTO
 
     # =================================================
     # CLIENTE
