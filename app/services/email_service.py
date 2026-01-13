@@ -1,32 +1,57 @@
+# app/services/email_service.py
+
+from email.message import EmailMessage
 from flask import current_app
 import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
 
-def send_email(to, subject, body):
+def send_email(
+    to,
+    subject,
+    body,
+    from_email=None,
+    from_name=None
+):
+    """
+    Envia e-mail usando SMTP global,
+    com remetente dinâmico por empresa.
+    """
 
-    sender = current_app.config["MAIL_DEFAULT_SENDER"]
+    msg = EmailMessage()
 
-    if isinstance(sender, tuple):
-        sender = f"{sender[0]} <{sender[1]}>"
+    # ==========================
+    # REMETENTE
+    # ==========================
+    if from_email:
+        if from_name:
+            msg["From"] = f"{from_name} <{from_email}>"
+        else:
+            msg["From"] = from_email
+    else:
+        msg["From"] = current_app.config["MAIL_DEFAULT_SENDER"]
 
-    msg = MIMEMultipart()
-    msg["From"] = sender
+    # ==========================
+    # DESTINATÁRIO
+    # ==========================
     msg["To"] = to
     msg["Subject"] = subject
+    msg.set_content(body)
 
-    msg.attach(MIMEText(body, "plain"))
-
-    with smtplib.SMTP(
+    # ==========================
+    # SMTP
+    # ==========================
+    server = smtplib.SMTP(
         current_app.config["MAIL_SERVER"],
         current_app.config["MAIL_PORT"]
-    ) as server:
+    )
 
+    if current_app.config.get("MAIL_USE_TLS", True):
         server.starttls()
-        server.login(
-            current_app.config["MAIL_USERNAME"],
-            current_app.config["MAIL_PASSWORD"]
-        )
 
-        server.send_message(msg)
+    server.login(
+        current_app.config["MAIL_USERNAME"],
+        current_app.config["MAIL_PASSWORD"]
+    )
+
+    server.send_message(msg)
+    server.quit()

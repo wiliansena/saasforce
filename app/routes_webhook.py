@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, current_app, request, jsonify
 from decimal import Decimal
 from app import db
 from app.models import VendaStreaming, Conta, Tela
@@ -82,28 +82,31 @@ def webhook_mercadopago():
 
     venda.status = "ENTREGUE"
     venda.data_entrega = utc_now()
+    db.session.commit()
 
         # ==============================
     # ENVIO DE E-MAIL (AQUI É O LUGAR CERTO)
     # ==============================
     conta = venda.tela.conta
 
+    empresa = venda.empresa  # relacionamento
+    from_email = empresa.email or current_app.config["MAIL_DEFAULT_SENDER"]
+
     send_email(
         to=venda.email_entrega,
         subject=f"Acesso liberado - {venda.servico.nome}",
         body=f"""
-        Olá!
+    Olá!
 
-        Seu pagamento foi confirmado com sucesso.
+    Seu pagamento foi confirmado com sucesso.
 
-        Serviço: {venda.servico.nome}
-        Login: {conta.email}
-        Senha: {conta.senha}
+    Serviço: {venda.servico.nome}
+    Login: {conta.email}
+    Senha: {conta.senha}
 
-        Qualquer dúvida, estamos à disposição.
-        """
+    Qualquer dúvida, estamos à disposição.
+    """,
+        from_email=from_email,
+        from_name=empresa.nome
     )
-
-    db.session.commit()
-
     return jsonify({"status": "entregue"}), 200

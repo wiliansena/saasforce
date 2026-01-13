@@ -41,6 +41,30 @@
                         </span>
                         {% endif %}
             </div>
+            
+{% set preco = d.servico.valor_venda_padrao %}
+{% set aumento = 20 %}
+
+<div class="mt-2 text-center">
+
+  <!-- Preço antigo -->
+  <div style="color: rgba(255,255,255,0.5); 
+              font-size: 0.85rem;
+              text-decoration: line-through;">
+    R$ {{ "%.2f"|format(preco * (100 + aumento) / 100) }}
+  </div>
+
+  <!-- Preço atual -->
+  <div class="fw-bold" style="color: #22c55e; font-size: 1.4rem;">
+    R$ {{ "%.2f"|format(preco) }}
+  </div>
+
+  <!-- Desconto -->
+  <div style="color: rgba(255,255,255,0.6); font-size: 0.75rem;">
+    TODOS COM {{ aumento }}% OFF
+  </div>
+
+</div>
 
 
             {% if d.livres > 0 %}

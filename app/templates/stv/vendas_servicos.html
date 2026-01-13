@@ -44,17 +44,31 @@
         {{ d.servico.nome }}
       </span>
 
-      <div class="d-flex gap-2 mt-1">
+{% set preco = d.servico.valor_venda_padrao %}
+{% set aumento = 20 %}
 
-        <span class="badge bg-success">
-          Livres: {{ d.livres }}
-        </span>
+<div class="mt-2 text-center">
 
-        <span class="badge bg-secondary">
-          Vendidas: {{ d.vendidas }}
-        </span>
+  <!-- Preço antigo -->
+  <div style="color: rgba(255,255,255,0.5); 
+              font-size: 0.85rem;
+              text-decoration: line-through;">
+    R$ {{ "%.2f"|format(preco * (100 + aumento) / 100) }}
+  </div>
 
-      </div>
+  <!-- Preço atual -->
+  <div class="fw-bold" style="color: #22c55e; font-size: 1.4rem;">
+    R$ {{ "%.2f"|format(preco) }}
+  </div>
+
+  <!-- Desconto -->
+  <div style="color: rgba(255,255,255,0.6); font-size: 0.75rem;">
+    {{ aumento }}% OFF
+  </div>
+
+</div>
+
+
 
       <a href="{{ url_for('routes.stv_vender_servico', servico_id=d.servico.id) }}"
          class="btn btn-success w-100 mt-3 fw-bold">

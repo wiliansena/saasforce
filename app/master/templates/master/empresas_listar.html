@@ -15,6 +15,7 @@
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
+                <th>Email</th>
                 <th>Status</th>
                 <th>Licença</th>
                 <th style="width: 200px;">Ações</th>
@@ -25,6 +26,7 @@
             <tr>
                 <td>{{ e.id }}</td>
                 <td>{{ e.nome }}</td>
+                <td>{{ e.email }}</td>
                 <td>
                     {% if e.ativa %}
                     <span class="badge bg-success">Ativa</span>

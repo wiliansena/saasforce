@@ -22,6 +22,7 @@ class Empresa(db.Model):
     nome = db.Column(db.String(120), nullable=False)
     cnpj = db.Column(db.String(18), unique=True, nullable=True)
     slug = db.Column(db.String(80), nullable=False, index=True)  # DEFINIR EMPRESA NO PAG AUTOMATICO
+    email = db.Column(db.String(255))
 
     ativa = db.Column(db.Boolean, default=True)
     criada_em = db.Column(db.DateTime, default=utc_now)
