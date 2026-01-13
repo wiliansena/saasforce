@@ -341,7 +341,7 @@ class VendaStreaming(EmpresaQueryMixin, db.Model):
     valor_pago = db.Column(db.Numeric(10, 2))
     pago_em = db.Column(db.DateTime)
 
-    pagamento_id = db.Column(db.String(100), nullable=False, index=True)
+    pagamento_id = db.Column(db.String(100), nullable=True, index=True)
     pagamento_status = db.Column(db.String(30))
 
     # =================================================
