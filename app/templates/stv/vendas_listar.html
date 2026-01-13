@@ -104,29 +104,58 @@
 
           <td>{{ v.servico.nome }}</td>
           <td>{{ v.tela.numero or '-' }}</td>
-          <td>R$ {{ v.valor_venda|br_moeda  }}</td>
-          <td>R$ {{ v.valor_comissao|br_moeda  }}</td>
+          <td>{{ v.valor_venda }}</td>
+          <td>{{ v.valor_comissao }}</td>
 
           <td>
-            {% if v.status == 'ATIVA' %}
-            <span class="badge bg-success">Ativa</span>
-            {% elif v.status == 'PENDENTE' %}
-            <span class="badge bg-warning text-dark">Pendente</span>
+            {% if v.status == "AGUARDANDO_PAGAMENTO" %}
+            <span class="badge bg-warning text-dark">
+              AGUARDANDO PAGAMENTO
+            </span>
+
+            {% elif v.status == "PENDENTE" %}
+            <span class="badge bg-info text-dark">
+              PENDENTE
+            </span>
+
+            {% elif v.status == "PAGO" %}
+            <span class="badge bg-primary">
+              PAGO
+            </span>
+
+            {% elif v.status == "ENTREGUE" %}
+            <span class="badge bg-success">
+              ENTREGUE
+            </span>
+
+            {% elif v.status == "FINALIZADA" %}
+            <span class="badge bg-success">
+              FINALIZADA
+            </span>
+
+            {% elif v.status == "CANCELADA" %}
+            <span class="badge bg-secondary">
+              CANCELADA
+            </span>
+
             {% else %}
-            <span class="badge bg-secondary">Cancelada</span>
+            <span class="badge bg-dark">
+              {{ v.status }}
+            </span>
             {% endif %}
           </td>
 
+
           <td>
             <div class="acoes-cell">
-              {% if v.status == 'ATIVA' %}
+
+              {% if v.status in ['PENDENTE', 'ENTREGUE', 'FINALIZADA'] and v.tela and v.tela.conta %}
               <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalWhatsapp"
                 data-telefone="{{ v.cliente.telefone }}" data-servico="{{ v.servico.nome }}"
                 data-email="{{ v.tela.conta.email }}" data-senha="{{ v.tela.conta.senha }}" {% if
-                v.servico.nome|upper=='NETFLIX' and v.tela %} data-tela="{{ v.tela.numero }}" {% endif %}>
-                <i class="fab fa-whatsapp"></i>Reenviar
+                v.servico.nome|upper=='NETFLIX' %} data-tela="{{ v.tela.numero }}" {% endif %}>
+                <i class="fab fa-whatsapp"></i> Reenviar
               </button>
-
               {% endif %}
 
               {% if v.status == 'PENDENTE' %}

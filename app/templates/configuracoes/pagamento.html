@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h4>Configuração de Pagamento</h4>
+
+    <div class="alert alert-info">
+        Configure o gateway de pagamento usado para as vendas automáticas.
+        <br>
+        <strong>Use o Access Token de TESTE do Mercado Pago.</strong>
+    </div>
+
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+            {{ form.gateway.label(class="form-label") }}
+            {{ form.gateway(class="form-select") }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.access_token.label(class="form-label") }}
+            {{ form.access_token(class="form-control") }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.public_key.label(class="form-label") }}
+            {{ form.public_key(class="form-control") }}
+        </div>
+
+        <div class="form-check mb-3">
+            {{ form.ativo(class="form-check-input") }}
+            {{ form.ativo.label(class="form-check-label") }}
+        </div>
+
+        <button class="btn btn-primary">
+            Salvar
+        </button>
+    </form>
+
+</div>
+{% endblock %}

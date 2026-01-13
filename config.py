@@ -14,7 +14,7 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = os.getenv(
         'DATABASE_URL',
-        'postgresql://saasforce:Wskj7byqH@localhost/saasforce'
+        'postgresql://postgres:Wskj7byqH@localhost/saasforce'
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -51,7 +51,7 @@ class Config:
     MAIL_USERNAME = "wilian.sennah@gmail.com"
     MAIL_PASSWORD = "rfqu izax uftn elih"  # app password
     MAIL_DEFAULT_SENDER = (
-        "VISYON X - BI Comercial",
+        "VISYON X - ",
         "wilian.sennah@gmail.com"
     )
 

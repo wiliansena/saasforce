@@ -1,0 +1,82 @@
+{% extends "base_mobile.html" %}
+
+{% block title %}Comprar Serviço{% endblock %}
+
+{% block content %}
+
+<h5 class="mb-3 fw-bold text-center">
+    Comprar Serviço
+</h5>
+
+<input type="text" id="pesquisaServico" class="form-control mb-3" placeholder="🔍 Buscar serviço...">
+
+<div class="grid" id="listaServicos">
+
+    {% for d in dados %}
+    <div class="grid-item" data-nome="{{ d.servico.nome | lower }}">
+
+        <div class="home-card">
+
+            {% if d.servico.imagem %}
+            <img src="{{ url_for('static', filename=d.servico.imagem) }}" alt="{{ d.servico.nome }}"
+                style="max-height:70px; object-fit:contain; border-radius:12px;">
+            {% else %}
+            <i class="fas fa-tv"></i>
+            {% endif %}
+
+            <span class="fw-bold mt-1">
+                {{ d.servico.nome }}
+            </span>
+
+            <div class="d-flex gap-2 mt-1 justify-content-center">
+                {% if d.livres <= 5 %} <span class="fw-semibold text-danger small">
+                    🔥 Última chance
+                    </span>
+                    {% elif d.livres <= 15 %} <span class="fw-semibold text-warning small">
+                        ⏳ Quase esgotado
+                        </span>
+                        {% else %}
+                        <span class="fw-semibold text-white small">
+                            🔐 Acesso exclusivo
+                        </span>
+                        {% endif %}
+            </div>
+
+
+            {% if d.livres > 0 %}
+            <a href="{{ url_for(
+    'public.checkout_publico',
+    slug=empresa.slug,
+    servico_id=d.servico.id
+) }}" class="btn btn-success w-100 mt-3 fw-bold">
+                Garantir Acesso
+            </a>
+
+            {% else %}
+            <button class="btn btn-secondary w-100 mt-3" disabled>
+                Sem estoque
+            </button>
+            {% endif %}
+
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+<script>
+    const input = document.getElementById("pesquisaServico");
+    const itens = document.querySelectorAll("#listaServicos .grid-item");
+
+    input.addEventListener("input", function () {
+        const termo = this.value.toLowerCase().trim();
+
+        itens.forEach(item => {
+            const nome = item.dataset.nome;
+            item.style.display = nome.includes(termo) ? "" : "none";
+        });
+    });
+</script>
+
+{% endblock %}

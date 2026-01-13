@@ -89,6 +89,16 @@ def create_app():
             logout_user()
 
     # 🔹 Importação de Blueprints (módulos de rotas)
+
+    from app.routes_pagamento import bp_pagamento
+    app.register_blueprint(bp_pagamento)
+
+    from app.routes_webhook import bp_webhook
+    app.register_blueprint(bp_webhook)
+
+    from app.routes_public import bp_public
+    app.register_blueprint(bp_public)
+
     from app.routes import bp as routes_bp
     app.register_blueprint(routes_bp)
 

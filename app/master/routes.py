@@ -56,6 +56,7 @@ def nova_empresa():
             # =====================================================
             empresa = Empresa(
                 nome=form.nome.data,
+                slug=form.nome.data,
                 ativa=True
             )
             db.session.add(empresa)

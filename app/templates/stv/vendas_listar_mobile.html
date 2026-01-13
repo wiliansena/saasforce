@@ -75,15 +75,15 @@
       <!-- Valores + Status -->
       <div class="d-flex justify-content-between align-items-center mt-2">
         <div>
-          <strong>R$ {{ v.valor_venda|br_moeda  }}</strong>
+          <strong>R$ {{ v.valor_venda }}</strong>
           <div class="small text-muted">
-            Comissão: R$ {{ v.valor_comissao|br_moeda  }}
+            Comissão: R$ {{ v.valor_comissao }}
           </div>
         </div>
 
         <div>
-          {% if v.status == 'ATIVA' %}
-            <span class="badge bg-success">Ativa</span>
+          {% if v.status == 'ENTREGUE' %}
+            <span class="badge bg-success">ENTREGUE</span>
           {% elif v.status == 'PENDENTE' %}
             <span class="badge bg-warning text-dark">Pendente</span>
           {% else %}
@@ -102,7 +102,7 @@
         </a>
         {% endif %}
 
-        {% if v.status == 'ATIVA' %}
+        {% if v.status == 'ENTREGUE' %}
         <button class="btn btn-sm btn-outline-success w-100"
                 data-bs-toggle="modal"
                 data-bs-target="#modalWhatsapp"

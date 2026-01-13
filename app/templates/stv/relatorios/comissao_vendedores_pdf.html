@@ -20,23 +20,33 @@
       <th>Observação</th>
     </tr>
   </thead>
+
   <tbody>
     {% for d in dados %}
     <tr>
       <td>{{ loop.index }}</td>
       <td>{{ d.vendedor }}</td>
-      <td>{{ (d.total_comissao|br_moeda or 0) }}</td>
-      <td>{{ d.observacao }}</td>
+      <td>{{ d.total_comissao|br_moeda }}</td>
+      <td>{{ d.observacao or "-" }}</td>
     </tr>
-    
     {% endfor %}
   </tbody>
+
   <tfoot>
     <tr>
       <th colspan="2">TOTAL GERAL</th>
-      <th>{{ (total_geral|br_moeda) }}</th>
+      <th>{{ total_geral|br_moeda }}</th>
+      <th></th>
     </tr>
   </tfoot>
 </table>
+
+<div style="margin-top:12px; font-size:10px; text-align:center;">
+  <strong>Observações:</strong><br>
+  • A comissão considera apenas vendas com valor já recebido.<br>
+  • Vendas <strong>PENDENTE</strong> referem-se a vendas manuais já recebidas.<br>
+  • Vendas com status <strong>AGUARDANDO PAGAMENTO</strong> referem-se a vendas automáticas via PIX ainda não pagas.<br>
+  • Vendas canceladas não entram no cálculo de comissão.
+</div>
 
 {% endblock %}

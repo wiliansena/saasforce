@@ -21,6 +21,7 @@ class Empresa(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(120), nullable=False)
     cnpj = db.Column(db.String(18), unique=True, nullable=True)
+    slug = db.Column(db.String(80), nullable=True, index=True)  # DEFINIR EMPRESA NO PAG AUTOMATICO
 
     ativa = db.Column(db.Boolean, default=True)
     criada_em = db.Column(db.DateTime, default=utc_now)
@@ -44,6 +45,7 @@ class Usuario(UserMixin, EmpresaQueryMixin,db.Model):
 
     is_master = db.Column(db.Boolean, default=False)  # 👈 CHAVE DO PAINEL MASTER
     is_admin_empresa = db.Column(db.Boolean, default=False)
+    tipo = db.Column(db.String(100), nullable=True)
 
     nome = db.Column(db.String(100), nullable=False)
     senha_hash = db.Column(db.String(200), nullable=False)
@@ -176,6 +178,7 @@ class Cliente(EmpresaQueryMixin, db.Model):
 
     telefone = db.Column(db.String(20), nullable=False)
     nome = db.Column(db.String(120), nullable=True)
+    email = db.Column(db.String(120), index=True)  # 👈 ADICIONAR
 
     criado_em = db.Column(db.DateTime, default=utc_now)
 
@@ -256,7 +259,6 @@ class Tela(EmpresaQueryMixin, db.Model):
     vendida = db.Column(db.Boolean, default=False)
 
 
-
 class VendaStreaming(EmpresaQueryMixin, db.Model):
     __tablename__ = "venda_streaming"
 
@@ -268,23 +270,154 @@ class VendaStreaming(EmpresaQueryMixin, db.Model):
         nullable=False
     )
 
-    cliente_id = db.Column(db.Integer, db.ForeignKey("cliente.id"), nullable=False)
+    # =================================================
+    # CLIENTE
+    # =================================================
+    cliente_id = db.Column(
+        db.Integer,
+        db.ForeignKey("cliente.id"),
+        nullable=False
+    )
     cliente = db.relationship("Cliente", back_populates="vendas")
 
-    servico_id = db.Column(db.Integer, db.ForeignKey("servico.id"), nullable=False)
+    # =================================================
+    # SERVIÇO / CONTA
+    # =================================================
+    servico_id = db.Column(
+        db.Integer,
+        db.ForeignKey("servico.id"),
+        nullable=False
+    )
     servico = db.relationship("Servico")
 
-    tela_id = db.Column(db.Integer, db.ForeignKey("tela.id"), nullable=True)
+    # 🔒 Tela só será definida APÓS pagamento confirmado
+    tela_id = db.Column(
+        db.Integer,
+        db.ForeignKey("tela.id"),
+        nullable=True
+    )
     tela = db.relationship("Tela")
 
-    vendedor_id = db.Column(db.Integer, db.ForeignKey("usuario.id"), nullable=False)
+    # =================================================
+    # VENDEDOR (opcional)
+    # =================================================
+    vendedor_id = db.Column(
+        db.Integer,
+        db.ForeignKey("usuario.id"),
+        nullable=True
+    )
     vendedor = db.relationship("Usuario")
 
+    # =================================================
+    # VALORES
+    # =================================================
     valor_venda = db.Column(db.Numeric(10, 2), nullable=False)
-    valor_comissao = db.Column(db.Numeric(10, 2), nullable=False)
+    
+    # 🔹 COMISSÃO OPCIONAL (SÓ SE HOUVER VENDEDOR)
+    valor_comissao = db.Column(db.Numeric(10, 2))
 
-    status = db.Column(db.String(20), default="PENDENTE")
+    # ====================
+    # PIX - guardando pix da venda
+    # ====================
+    pix_qr_code = db.Column(db.Text)
+    pix_qr_code_base64 = db.Column(db.Text)
 
+
+    # =================================================
+    # STATUS
+    # =================================================
+    status = db.Column(
+        db.String(30),
+        nullable=False,
+        default="AGUARDANDO_PAGAMENTO"
+    )
+    # AGUARDANDO_PAGAMENTO | PAGO | ENTREGUE | CANCELADA
+
+    # =================================================
+    # PAGAMENTO (TXID)
+    # =================================================
+    metodo_pagamento = db.Column(db.String(20))  # pix, cartão
+    valor_pago = db.Column(db.Numeric(10, 2))
+    pago_em = db.Column(db.DateTime)
+
+    pagamento_id = db.Column(db.String(100), index=True)
+    pagamento_status = db.Column(db.String(30))
+
+    # =================================================
+    # ENTREGA
+    # =================================================
+    email_entrega = db.Column(db.String(120))
+    data_entrega = db.Column(db.DateTime)
+
+    # =================================================
+    # DATAS
+    # =================================================
     data_venda = db.Column(db.DateTime, default=utc_now)
-    data_entrega = db.Column(db.DateTime, nullable=True)
 
+    __table_args__ = (
+    db.Index("ix_venda_empresa_status", "empresa_id", "status"),
+    )
+
+
+class EmpresaPagamentoConfig(db.Model):
+    __tablename__ = "empresa_pagamento_config"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    empresa_id = db.Column(
+        db.Integer,
+        db.ForeignKey("empresa.id"),
+        unique=True,
+        nullable=False
+    )
+
+    empresa = db.relationship("Empresa")
+
+    # ---------------------------------
+    # GATEWAY
+    # ---------------------------------
+    gateway = db.Column(
+        db.String(30),
+        nullable=False,
+        default="mercadopago"
+    )
+    # mercadopago | efi | stripe (futuro)
+
+    # ---------------------------------
+    # MERCADO PAGO
+    # ---------------------------------
+    access_token = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    public_key = db.Column(db.String(255))
+    webhook_secret = db.Column(db.String(255))
+
+    ativo = db.Column(db.Boolean, default=True)
+
+    criado_em = db.Column(db.DateTime, default=utc_now)
+
+
+
+import secrets
+
+class VendaTokenAcesso(db.Model):
+    __tablename__ = "venda_token_acesso"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    venda_id = db.Column(
+        db.Integer,
+        db.ForeignKey("venda_streaming.id"),
+        nullable=False,
+        unique=True
+    )
+
+    token = db.Column(
+        db.String(64),
+        unique=True,
+        nullable=False
+    )
+
+    criado_em = db.Column(db.DateTime, default=utc_now)

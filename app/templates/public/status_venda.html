@@ -1,0 +1,140 @@
+{% extends "base_mobile.html" %}
+
+{% block title %}Status do Pedido{% endblock %}
+
+{% block content %}
+
+<div class="container text-center">
+
+  <!-- TÍTULO -->
+  <h5 class="fw-bold mb-3">
+    {{ venda.servico.nome }}
+  </h5>
+
+  {# ===============================
+     STATUS: AGUARDANDO PAGAMENTO
+     =============================== #}
+  {% if venda.status in ["AGUARDANDO_PAGAMENTO", "PENDENTE", "PAGO"] %}
+
+    <div class="alert alert-warning py-2">
+      ⏳ Aguardando pagamento via PIX
+    </div>
+
+    <!-- QR CODE -->
+    <div class="d-flex justify-content-center my-3">
+      <img
+        src="data:image/png;base64,{{ venda.pix_qr_code_base64 }}"
+        alt="QR Code PIX"
+        class="img-fluid"
+        style="
+          max-width:260px;
+          background:#fff;
+          padding:10px;
+          border-radius:12px;
+          box-shadow:0 4px 12px rgba(0,0,0,.15);
+        "
+      >
+    </div>
+
+    <p class="small text-muted mb-2">
+      Escaneie o QR Code acima<br>
+      ou use o código PIX abaixo
+    </p>
+
+    <!-- PIX COPIA E COLA -->
+    <textarea
+      id="pixCode"
+      class="form-control small mb-2"
+      rows="3"
+      readonly
+    >{{ venda.pix_qr_code }}</textarea>
+
+    <button
+      class="btn btn-outline-primary w-100"
+      onclick="copiarPix()"
+    >
+      📋 Copiar código PIX
+    </button>
+
+    <div
+      id="pixFeedback"
+      class="text-success small mt-2 d-none"
+    >
+      ✔ Código PIX copiado!
+    </div>
+
+    <script>
+      function copiarPix() {
+        const campo = document.getElementById("pixCode");
+        campo.select();
+        campo.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(campo.value);
+
+        const feedback = document.getElementById("pixFeedback");
+        feedback.classList.remove("d-none");
+        setTimeout(() => feedback.classList.add("d-none"), 2000);
+      }
+
+      // Atualiza automaticamente enquanto aguarda pagamento
+      setTimeout(() => {
+        location.reload();
+      }, 8000);
+    </script>
+
+  {# ===============================
+     STATUS: ENTREGUE / FINALIZADA
+     =============================== #}
+  {% elif venda.status in ["ENTREGUE", "FINALIZADA"] %}
+
+    <div class="alert alert-success py-2">
+      ✅ Pagamento confirmado!
+    </div>
+
+    <div class="card mt-3 text-start">
+      <div class="card-body">
+
+        <p class="mb-2">
+          <strong>Serviço:</strong><br>
+          {{ venda.servico.nome }}
+        </p>
+
+        <p class="mb-2">
+          <strong>Login:</strong><br>
+          <span class="text-break">
+            {{ venda.tela.conta.email }}
+          </span>
+        </p>
+
+        <p class="mb-2">
+          <strong>Senha:</strong><br>
+          {{ venda.tela.conta.senha }}
+        </p>
+
+        <hr>
+
+        <p class="small text-muted mb-0">
+          📧 Os dados também foram enviados para seu e-mail.
+        </p>
+
+      </div>
+    </div>
+
+  {# ===============================
+     STATUS: CANCELADA
+     =============================== #}
+  {% elif venda.status == "CANCELADA" %}
+
+    <div class="alert alert-secondary py-2">
+      ❌ Pedido cancelado
+    </div>
+
+    <p class="small text-muted">
+      Se você realizou o pagamento e não recebeu o acesso,<br>
+      entre em contato com o suporte.
+    </p>
+
+  {% endif %}
+
+</div>
+
+{% endblock %}

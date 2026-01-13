@@ -795,6 +795,12 @@ def stv_vender_servico(servico_id):
             )
             db.session.add(cliente)
             db.session.flush()
+        else:
+            if not cliente.nome:
+                cliente.nome = f"Cliente {cliente.telefone}"
+
+            db.session.add(cliente)
+            db.session.flush()
 
         conta_id = request.form.get("conta_id")
         conta = (
@@ -840,7 +846,7 @@ def stv_vender_servico(servico_id):
             if tela:
                 tela.vendida = True
                 venda.tela_id = tela.id
-                venda.status = "ATIVA"
+                venda.status = "ENTREGUE"
                 venda.data_entrega = utc_now()
 
         db.session.add(venda)
@@ -919,7 +925,7 @@ def stv_finalizar_venda(venda_id):
 
         tela.vendida = True
         venda.tela_id = tela.id
-        venda.status = "ATIVA"
+        venda.status = "ENTREGUE"
         venda.data_entrega = utc_now()
 
         venda.valor_venda = (
@@ -971,7 +977,7 @@ def stv_cancelar_venda(venda_id):
         flash("Esta venda já está cancelada.", "warning")
         return redirect(url_for("routes.stv_listar_vendas"))
 
-    if venda.status == "ATIVA" and venda.tela:
+    if venda.status == "ENTREGUE" and venda.tela:
         venda.tela.vendida = False
         venda.tela = None
 
@@ -1038,6 +1044,9 @@ def stv_bi_dashboard():
         data_fim=data_fim
     )
 
+from app.constants import STATUS_FINANCEIRO_VALIDO
+
+
 
 @bp.route("/stv/bi/kpis")
 @login_required
@@ -1051,7 +1060,7 @@ def stv_bi_kpis():
 
     q = (
         VendaStreaming.query_empresa()
-        .filter(VendaStreaming.status.in_(["ATIVA", "PENDENTE"]))
+        .filter(VendaStreaming.status.in_(STATUS_FINANCEIRO_VALIDO))
     )
 
     if dt_ini:
@@ -1096,6 +1105,7 @@ def stv_bi_kpis():
         "lucro": formatar_moeda(lucro)
     })
 
+
 @bp.route("/stv/bi/comissao_por_vendedor")
 @login_required
 @requer_permissao("administrativo", "ver")
@@ -1114,7 +1124,7 @@ def stv_bi_comissao_por_vendedor():
         .join(VendaStreaming, VendaStreaming.vendedor_id == Usuario.id)
         .filter(
             VendaStreaming.empresa_id == current_user.empresa_id,
-            VendaStreaming.status.in_(["ATIVA", "PENDENTE"])
+            VendaStreaming.status.in_(STATUS_FINANCEIRO_VALIDO)
         )
     )
 
@@ -1184,7 +1194,7 @@ def stv_bi_vendido_por_dia():
         )
         .filter(
             VendaStreaming.empresa_id == current_user.empresa_id,
-            VendaStreaming.status.in_(["ATIVA", "PENDENTE"])
+            VendaStreaming.status.in_(STATUS_FINANCEIRO_VALIDO)
         )
     )
 
@@ -1234,7 +1244,7 @@ def stv_bi_comissao_vendedores():
         .join(VendaStreaming, VendaStreaming.vendedor_id == Usuario.id)
         .filter(
             VendaStreaming.empresa_id == current_user.empresa_id,
-            VendaStreaming.status.in_(["ATIVA", "PENDENTE"])
+            VendaStreaming.status.in_(STATUS_FINANCEIRO_VALIDO)
         )
     )
 
@@ -1267,7 +1277,7 @@ def stv_bi_comissao_vendedores():
             .filter(
                 VendaStreaming.vendedor_id == r.vendedor_id,
                 VendaStreaming.empresa_id == current_user.empresa_id,
-                VendaStreaming.status.in_(["ATIVA", "PENDENTE"])
+                VendaStreaming.status.in_(STATUS_FINANCEIRO_VALIDO)
             )
         )
 
@@ -1342,7 +1352,7 @@ def stv_relatorio_comissao_vendedores_pdf():
         .join(VendaStreaming, VendaStreaming.vendedor_id == Usuario.id)
         .filter(
             VendaStreaming.empresa_id == current_user.empresa_id,
-            VendaStreaming.status.in_(["ATIVA", "PENDENTE"])
+            VendaStreaming.status.in_(STATUS_FINANCEIRO_VALIDO)
         )
     )
 
@@ -1370,7 +1380,7 @@ def stv_relatorio_comissao_vendedores_pdf():
             .filter(
                 VendaStreaming.empresa_id == current_user.empresa_id,
                 VendaStreaming.vendedor_id == r.vendedor_id,
-                VendaStreaming.status == "PENDENTE"
+                VendaStreaming.status == "AGUARDANDO_PAGAMENTO"
             )
         )
 
@@ -1432,12 +1442,11 @@ def stv_relatorio_comissao_vendedores_pdf():
     return response
 
 
-
-
 from datetime import date, timedelta
 from flask import request, make_response, render_template
 from weasyprint import HTML
 from sqlalchemy import func
+from app.constants import STATUS_FINANCEIRO_VALIDO
 
 @bp.route("/stv/relatorios/vendas/pdf")
 @login_required
@@ -1454,14 +1463,15 @@ def stv_relatorio_vendas_pdf():
         "data_fim",
         hoje.strftime("%Y-%m-%d")
     )
+
     status = request.args.get("status")
     vendedor_id = request.args.get("vendedor_id")
 
     dt_ini, dt_fim = periodo_datetime(data_ini, data_fim)
 
-    # -------------------------
+    # =================================================
     # BASE DE VENDAS (POR EMPRESA)
-    # -------------------------
+    # =================================================
     q = (
         db.session.query(
             VendaStreaming.data_venda,
@@ -1494,45 +1504,56 @@ def stv_relatorio_vendas_pdf():
 
     vendas = q.order_by(VendaStreaming.data_venda.desc()).all()
 
-    # -------------------------
-    # TOTAIS
-    # -------------------------
+    # =================================================
+    # TOTAIS (REGRA DE NEGÓCIO CORRETA)
+    # =================================================
+
+    # ✔ Vendas válidas (manual + pix pago)
     total_vendas = sum(
-        v.valor_venda or 0 for v in vendas if v.status == "ATIVA"
+        v.valor_venda or 0
+        for v in vendas
+        if v.status in STATUS_FINANCEIRO_VALIDO
     )
 
     total_comissao = sum(
-        v.valor_comissao or 0 for v in vendas if v.status == "ATIVA"
+        v.valor_comissao or 0
+        for v in vendas
+        if v.status in STATUS_FINANCEIRO_VALIDO
     )
 
-    total_vendas_pendente = sum(
-        v.valor_venda or 0 for v in vendas if v.status == "PENDENTE"
+    # ⚠️ PIX ainda não pago (informativo)
+    total_vendas_aguardando = sum(
+        v.valor_venda or 0
+        for v in vendas
+        if v.status == "AGUARDANDO_PAGAMENTO"
     )
 
-    total_comissao_pendente = sum(
-        v.valor_comissao or 0 for v in vendas if v.status == "PENDENTE"
-    )
-
+    # ❌ Canceladas
     total_vendas_cancelada = sum(
-        v.valor_venda or 0 for v in vendas if v.status == "CANCELADA"
+        v.valor_venda or 0
+        for v in vendas
+        if v.status == "CANCELADA"
     )
 
     total_comissao_cancelada = sum(
-        v.valor_comissao or 0 for v in vendas if v.status == "CANCELADA"
+        v.valor_comissao or 0
+        for v in vendas
+        if v.status == "CANCELADA"
     )
 
-    # ✅ TOTAL GERAL (SEM CANCELADAS)
-    total_vendas_geral = total_vendas + total_vendas_pendente
-    total_comissao_geral = total_comissao + total_comissao_pendente
+    # ✅ Total geral REAL (sem duplicação)
+    total_vendas_geral = total_vendas
+    total_comissao_geral = total_comissao
 
-
+    # =================================================
+    # RENDER PDF
+    # =================================================
     html = render_template(
         "stv/relatorios/vendas_pdf.html",
         vendas=vendas,
         total_vendas=total_vendas,
         total_comissao=total_comissao,
-        total_vendas_pendente=total_vendas_pendente,
-        total_comissao_pendente=total_comissao_pendente,
+        total_vendas_aguardando=total_vendas_aguardando,
         total_vendas_cancelada=total_vendas_cancelada,
         total_comissao_cancelada=total_comissao_cancelada,
         total_vendas_geral=total_vendas_geral,
@@ -1551,4 +1572,5 @@ def stv_relatorio_vendas_pdf():
     )
 
     return response
+
 

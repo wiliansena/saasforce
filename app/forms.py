@@ -18,6 +18,8 @@ from flask_wtf import FlaskForm
 
 ##### STV #####
 
+##### STV #####
+
 class LicencaSistemaForm(FlaskForm):
     dias_acesso = IntegerField("Dias_De_Acesso", validators=[DataRequired()])
     submit = SubmitField("Salvar")
@@ -55,3 +57,43 @@ class ContaForm(FlaskForm):
 
 class VendaStreamingForm(FlaskForm):
     telefone = StringField("Telefone do Cliente", validators=[DataRequired()])
+
+## PAGAMENTO FORM ###
+
+from flask_wtf import FlaskForm
+from wtforms import (
+    StringField,
+    BooleanField,
+    SelectField,
+    SubmitField
+)
+from wtforms.validators import DataRequired, Length
+
+
+class EmpresaPagamentoConfigForm(FlaskForm):
+
+    gateway = SelectField(
+        "Gateway de Pagamento",
+        choices=[
+            ("mercadopago", "Mercado Pago"),
+        ],
+        validators=[DataRequired()]
+    )
+
+    access_token = StringField(
+        "Access Token (TESTE)",
+        validators=[DataRequired(), Length(max=255)]
+    )
+
+    public_key = StringField(
+        "Public Key (opcional)",
+        validators=[Length(max=255)]
+    )
+
+    ativo = BooleanField(
+        "Ativar pagamentos automáticos",
+        default=True
+    )
+
+    submit = SubmitField("Salvar configuração")
+

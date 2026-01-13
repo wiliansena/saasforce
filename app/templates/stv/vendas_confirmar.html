@@ -188,8 +188,8 @@
         {% if venda_confirmada %}
         <div class="mt-2">
           <span class="info-label">Status:</span>
-          {% if venda.status == "ATIVA" %}
-          <span class="badge bg-success">ATIVA</span>
+          {% if venda.status == "ENTREGUE" %}
+          <span class="badge bg-success">ENTREGUE</span>
           {% else %}
           <span class="badge bg-warning text-dark">PENDENTE</span>
           {% endif %}
@@ -244,7 +244,7 @@
       Venda registrada com sucesso!
     </div>
 
-    {% if venda.status == "ATIVA" and venda.tela %}
+    {% if venda.status == "ENTREGUE" and venda.tela %}
     <div class="card mb-3">
       <div class="card-body">
         <div class="info-value">
@@ -318,7 +318,7 @@
           <textarea id="msgWhatsapp" class="form-control mb-3" rows="6" readonly>
 *{{ servico.nome | upper }}*
 
-{% if venda.status == "ATIVA" and venda.tela %}
+{% if venda.status == "ENTREGUE" and venda.tela %}
 👤 *Email:* {{ venda.tela.conta.email }}
 🔑 *Senha:* {{ venda.tela.conta.senha }}
 {% if servico.nome|upper == 'NETFLIX' %}
@@ -412,7 +412,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // ===============================
   let mensagem = `*${servico.toUpperCase()}*\n\n`;
 
-  if (status === "ATIVA" && email && senha) {
+  if (status === "ENTREGUE" && email && senha) {
     mensagem += `${EMOJI_USER} Email: ${email}\n`;
     mensagem += `${EMOJI_KEY} Senha: ${senha}\n\n`;
     mensagem += `Agradecemos a preferência! ${EMOJI_OK}${EMOJI_POP}`;

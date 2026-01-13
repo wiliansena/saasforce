@@ -47,9 +47,10 @@
 </table>
 
 <!-- QUEBRA DE PÁGINA -->
-<div style="page-break-inside: avoid;"></div>
+<div style="page-break-before: always;"></div>
 
 <h3>Totais do Período</h3>
+
 <div style="margin-top:6px; page-break-inside: avoid;">
     <table>
         <thead>
@@ -62,29 +63,33 @@
         </thead>
 
         <tbody>
+            <!-- ✔ TOTAL FATURADO -->
             <tr>
-                <th colspan="5">TOTAIS (Ativas + Pendentes)</th>
-                <td>{{ total_vendas_geral|br_moeda }}</td>
-                <td>{{ total_comissao_geral|br_moeda }}</td>
+                <th colspan="5">
+                    TOTAL FATURADO<br>
+                    <small>(Vendas manuais + PIX pagos)</small>
+                </th>
+                <td><strong>{{ total_vendas_geral|br_moeda }}</strong></td>
+                <td><strong>{{ total_comissao_geral|br_moeda }}</strong></td>
                 <td></td>
             </tr>
 
+            <!-- ⚠️ PIX NÃO PAGO -->
             <tr>
-                <th colspan="5">TOTAIS (ATIVAS)</th>
-                <td>{{ total_vendas|br_moeda }}</td>
-                <td>{{ total_comissao|br_moeda }}</td>
+                <th colspan="5">
+                    PIX AGUARDANDO PAGAMENTO<br>
+                    <small>(Não entra no faturamento)</small>
+                </th>
+                <td>{{ total_vendas_aguardando|br_moeda }}</td>
+                <td>-</td>
                 <td></td>
             </tr>
 
+            <!-- ❌ CANCELADAS -->
             <tr>
-                <th colspan="5">TOTAIS (PENDENTES)</th>
-                <td>{{ total_vendas_pendente|br_moeda }}</td>
-                <td>{{ total_comissao_pendente|br_moeda }}</td>
-                <td></td>
-            </tr>
-
-            <tr>
-                <th colspan="5">TOTAIS (CANCELADAS)</th>
+                <th colspan="5">
+                    VENDAS CANCELADAS
+                </th>
                 <td>{{ total_vendas_cancelada|br_moeda }}</td>
                 <td>{{ total_comissao_cancelada|br_moeda }}</td>
                 <td></td>
