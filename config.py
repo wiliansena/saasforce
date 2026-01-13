@@ -48,11 +48,11 @@ class Config:
     MAIL_SERVER = "smtp.gmail.com"
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = "rootecsys@gmail.com"
-    MAIL_PASSWORD = "hehg cbbi lsac kuem"  # app password
+    MAIL_USERNAME = "saasfx01@gmail.com"
+    MAIL_PASSWORD = "jtxs dfso dyfp rpuk"  # app password
     MAIL_DEFAULT_SENDER = (
-        "VISYON X - ",
-        "rootecsys@gmail.com"
+        "SAASFX - ",
+        "saasfx01@gmail.com"
     )
 
-    ALERTA_RFM_EMAIL = "rootecsys@gmail.com"
+    ALERTA_RFM_EMAIL = "saasfx01@gmail.com"
