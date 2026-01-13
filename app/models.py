@@ -21,7 +21,7 @@ class Empresa(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(120), nullable=False)
     cnpj = db.Column(db.String(18), unique=True, nullable=True)
-    slug = db.Column(db.String(80), nullable=True, index=True)  # DEFINIR EMPRESA NO PAG AUTOMATICO
+    slug = db.Column(db.String(80), nullable=False, index=True)  # DEFINIR EMPRESA NO PAG AUTOMATICO
 
     ativa = db.Column(db.Boolean, default=True)
     criada_em = db.Column(db.DateTime, default=utc_now)
@@ -304,7 +304,7 @@ class VendaStreaming(EmpresaQueryMixin, db.Model):
     vendedor_id = db.Column(
         db.Integer,
         db.ForeignKey("usuario.id"),
-        nullable=True
+        nullable=False
     )
     vendedor = db.relationship("Usuario")
 
@@ -314,7 +314,7 @@ class VendaStreaming(EmpresaQueryMixin, db.Model):
     valor_venda = db.Column(db.Numeric(10, 2), nullable=False)
     
     # 🔹 COMISSÃO OPCIONAL (SÓ SE HOUVER VENDEDOR)
-    valor_comissao = db.Column(db.Numeric(10, 2))
+    valor_comissao = db.Column(db.Numeric(10, 2), nullable=False)
 
     # ====================
     # PIX - guardando pix da venda
@@ -340,7 +340,7 @@ class VendaStreaming(EmpresaQueryMixin, db.Model):
     valor_pago = db.Column(db.Numeric(10, 2))
     pago_em = db.Column(db.DateTime)
 
-    pagamento_id = db.Column(db.String(100), index=True)
+    pagamento_id = db.Column(db.String(100), nullable=False, index=True)
     pagamento_status = db.Column(db.String(30))
 
     # =================================================
