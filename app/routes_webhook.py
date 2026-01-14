@@ -107,6 +107,6 @@ def webhook_mercadopago():
     Qualquer dúvida, estamos à disposição.
     """,
         from_email=from_email,
-        from_name=empresa.nome
+        from_name="Apps"
     )
     return jsonify({"status": "entregue"}), 200
