@@ -48,11 +48,11 @@ class Config:
     MAIL_SERVER = "smtp.gmail.com"
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = "saasfx01@gmail.com"
-    MAIL_PASSWORD = "jtxs dfso dyfp rpuk"  # app password
+    MAIL_USERNAME = "enviiiosonlinee@gmail.com"
+    MAIL_PASSWORD = "ujrn weul ockt ecsi"  # app password
     MAIL_DEFAULT_SENDER = (
-        "SAASFX - ",
-        "saasfx01@gmail.com"
+        "VENDAS - ",
+        "enviiiosonlinee@gmail.com"
     )
 
-    ALERTA_RFM_EMAIL = "saasfx01@gmail.com"
+    ALERTA_RFM_EMAIL = "enviiiosonlinee@gmail.com"
