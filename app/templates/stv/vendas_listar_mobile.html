@@ -6,7 +6,13 @@
 <h5 class="mb-3 fw-bold text-center">
   Vendas de Streaming
 </h5>
-
+<hr>
+<!-- Voltar -->
+<a href="{{ url_for('routes.home') }}"
+   class="btn btn-outline-info w-100 mt-3">
+  ← Voltar
+</a>
+<hr>
 <!-- Busca -->
 <form method="get" class="mb-3">
 
@@ -170,11 +176,6 @@
 </nav>
 {% endif %}
 
-<!-- Voltar -->
-<a href="{{ url_for('routes.home') }}"
-   class="btn btn-outline-info w-100 mt-3">
-  ← Voltar
-</a>
 
 <!-- MODAL WHATSAPP -->
 <div class="modal fade" id="modalWhatsapp" tabindex="-1">

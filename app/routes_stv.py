@@ -1146,6 +1146,52 @@ def stv_bi_comissao_por_vendedor():
         }
         for v, t in q.all()
     ])
+    
+    
+@bp.route("/stv/bi/vendas_por_vendedor")
+@login_required
+@requer_permissao("administrativo", "ver")
+def stv_bi_vendas_por_vendedor():
+
+    data_ini = request.args.get("data_ini")
+    data_fim = request.args.get("data_fim")
+
+    dt_ini, dt_fim = periodo_datetime(data_ini, data_fim)
+
+    q = (
+        db.session.query(
+            Usuario.nome.label("vendedor"),
+            func.sum(VendaStreaming.valor_venda).label("total_vendido"),
+            func.sum(VendaStreaming.valor_comissao).label("total_comissao"),
+        )
+        .join(VendaStreaming, VendaStreaming.vendedor_id == Usuario.id)
+        .filter(
+            VendaStreaming.empresa_id == current_user.empresa_id,
+            VendaStreaming.status.in_(STATUS_FINANCEIRO_VALIDO),
+        )
+    )
+
+    if dt_ini:
+        q = q.filter(VendaStreaming.data_venda >= dt_ini)
+    if dt_fim:
+        q = q.filter(VendaStreaming.data_venda <= dt_fim)
+
+    q = (
+        q.group_by(Usuario.nome)
+         .order_by(func.sum(VendaStreaming.valor_venda).desc())  # 🔥 ranking por vendas
+    )
+
+    return jsonify([
+        {
+            "vendedor": v,
+            "total_vendido": float(tv or 0),
+            "total_comissao": float(tc or 0),
+            "total_vendido_fmt": formatar_moeda(tv or 0),
+            "total_comissao_fmt": formatar_moeda(tc or 0),
+        }
+        for v, tv, tc in q.all()
+    ])
+
 
 @bp.route("/stv/bi/ranking_vendedores")
 @login_required

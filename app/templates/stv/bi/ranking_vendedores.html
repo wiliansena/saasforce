@@ -84,13 +84,13 @@
     const dataIni = document.getElementById("data_ini").value;
     const dataFim = document.getElementById("data_fim").value;
 
-    const url = `/stv/bi/comissao_por_vendedor?data_ini=${dataIni}&data_fim=${dataFim}`;
+    const url = `/stv/bi/vendas_por_vendedor?data_ini=${dataIni}&data_fim=${dataFim}`;
 
     const resp = await fetch(url);
     const dados = await resp.json();
 
     const labels = dados.map(d => d.vendedor);
-    const valores = dados.map(d => d.total);
+    const valores = dados.map(d => d.total_vendido);
 
     const ctx = document.getElementById("graficoComissao");
 
@@ -123,12 +123,16 @@
             bodyColor: "#e5e7eb",
             padding: 10,
             cornerRadius: 8,
-            callbacks: {
-              label: function (ctx) {
-                const v = dados[ctx.dataIndex].total_fmt;
-                return `R$ ${v}`;
-              }
-            }
+			callbacks: {
+			  label: function (ctx) {
+				const d = dados[ctx.dataIndex];
+				return [
+				  `Vendido: R$ ${d.total_vendido_fmt}`,
+				  `Comissão: R$ ${d.total_comissao_fmt}`
+				];
+			  }
+			}
+
           }
         },
 
