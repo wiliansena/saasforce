@@ -48,22 +48,23 @@
             <h6 class="fw-bold mb-2">Conta Padrão</h6>
 
             {% if usuario_padrao %}
-            <div class="p-3 rounded bg-light">
-                <div><strong>Nome:</strong> {{ usuario_padrao.nome }}</div>
-                <div><strong>Email:</strong> {{ usuario_padrao.email }}</div>
+            <div class="p-3 rounded bg-secondary">
+                <div><strong>Nome: </strong> {{ usuario_padrao.nome }}</div>
+                <div><strong>Email: </strong> {{ usuario_padrao.email }}</div>
             </div>
             {% else %}
             <div class="alert alert-warning mb-0">
                 Nenhuma conta padrão definida para esta empresa.
             </div>
             {% endif %}
-
-            <a href="{{ url_for(
+<hr>
+<div class="mt-4">            <a href="{{ url_for(
                 'master.resetar_senha_usuario_empresa',
                 empresa_id=empresa.id,
-                usuario_id=usuario_padrao.id) }}" class="btn btn-sm btn-outline-danger">
+                usuario_id=usuario_padrao.id) }}" class="btn btn-sm btn-danger">
                 🔐 Resetar senha do admin
-            </a>
+            </a></div>
+
 
 
             <!-- AÇÕES -->

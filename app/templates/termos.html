@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Termos de Uso – SaasFX</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #0b0f14;
+            color: #e5e7eb;
+        }
+
+        .card-termos {
+            background: linear-gradient(145deg, #0b132b, #020617);
+            border-radius: 18px;
+            padding: 18px;
+        }
+
+        .termos-texto {
+            max-height: 50vh;
+            overflow-y: auto;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .btn-aceitar {
+            height: 52px;
+            font-size: 1rem;
+            border-radius: 14px;
+        }
+    </style>
+</head>
+
+<body class="d-flex align-items-center justify-content-center">
+
+    <div class="container px-3">
+        <div class="card-termos shadow">
+
+            <h5 class="mb-3">Termos de Uso – SaasFX</h5>
+
+            <div class="termos-texto mb-4">
+                <p>
+                    Ao utilizar o sistema SaasFX, o usuário declara estar ciente e de acordo que:
+                </p>
+
+                <ul>
+                    <li>Os dados inseridos no sistema são de sua inteira responsabilidade.</li>
+                    <li>O SaasFX não se responsabiliza por erros de lançamento, interpretação ou uso incorreto das
+                        informações.</li>
+                    <li>O sistema é uma ferramenta de apoio à gestão, não garantindo resultados financeiros ou
+                        comerciais.</li>
+                    <li>O usuário compromete-se a utilizar o sistema de forma lícita e responsável.</li>
+                    <li>O sistema poderá passar por manutenções, atualizações ou indisponibilidades temporárias.</li>
+                    <li>O uso indevido poderá resultar na suspensão ou encerramento da conta.</li>
+                </ul>
+
+                <p>
+                    Ao continuar, você concorda integralmente com estes termos.
+                </p>
+            </div>
+
+
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-primary w-100 btn-aceitar">
+                    Aceitar e continuar
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

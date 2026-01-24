@@ -53,6 +53,12 @@ class Usuario(UserMixin, EmpresaQueryMixin,db.Model):
 
     email = db.Column(db.String(120), unique=True, nullable=False)
 
+    # termos de uso #
+    termos_aceitos = db.Column(db.Boolean, default=False)
+    data_aceite_termos = db.Column(db.DateTime)
+    versao_termos = db.Column(db.String(20))
+    ip_aceite = db.Column(db.String(45))
+
     permissoes = db.relationship(
         "Permissao",
         backref="usuario",

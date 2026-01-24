@@ -14,7 +14,6 @@ class ResetSenhaUsuarioForm(FlaskForm):
     )
     submit = SubmitField("Resetar senha")
 
-
 class NovaEmpresaForm(FlaskForm):
     nome = StringField(
         "Nome da Empresa",

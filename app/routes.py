@@ -26,6 +26,26 @@ UPLOAD_FOLDER = 'app/static/uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
+@bp.before_request
+def verificar_termos_aceitos():
+
+    rotas_liberadas = [
+        'auth.login',
+        'auth.logout',
+        'routes.termos',
+        'static'
+    ]
+
+    if not current_user.is_authenticated:
+        return
+
+    if request.endpoint in rotas_liberadas:
+        return
+
+    if not current_user.termos_aceitos:
+        return redirect(url_for('routes.termos'))
+
+
 
 @bp.before_request
 def carregar_permissoes():
@@ -404,3 +424,24 @@ def excluir_licenca(id):
     db.session.commit()
     flash("Licença excluída com sucesso!", "success")
     return redirect(url_for('routes.listar_licencas'))
+
+
+@bp.route('/termos', methods=['GET', 'POST'])
+@login_required
+def termos():
+
+    if current_user.termos_aceitos:
+        return redirect(url_for('routes.home'))
+
+    if request.method == 'POST':
+        current_user.termos_aceitos = True
+        current_user.data_aceite_termos = datetime.utcnow()
+        current_user.versao_termos = "1.0"
+        current_user.ip_aceite = request.remote_addr
+
+        db.session.commit()
+
+        flash("Termos aceitos com sucesso.", "success")
+        return redirect(url_for('routes.home'))
+
+    return render_template('termos.html')
